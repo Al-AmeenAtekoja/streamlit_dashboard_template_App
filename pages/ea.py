@@ -1,7 +1,7 @@
 import streamlit as st
 import pandas as pd
 import time
-from streamlit_dynamic_filters import DynamicFilters
+#from streamlit_dynamic_filters import DynamicFilters
 
 # --- Constants ----------------------------------------------------------
 # Named so it's obvious these are deliberate scalings, not typos.
@@ -480,9 +480,9 @@ final_piv= final_piv.iloc[:, [5,0,1,2,3,4,6,7,8,9,10]]
 
 # --- Filtering and display ---------------------------------------------
 
-dynamic_filters = DynamicFilters(final_piv, filters=['Sponsor', 'Asset'])
+#dynamic_filters = DynamicFilters(final_piv, filters=['Sponsor', 'Asset'])
 #dynamic_filters.display_filters(location='columns',num_columns=2)
-filtered_df = dynamic_filters.filter_df()
+#filtered_df = dynamic_filters.filter_df()
 
 st.subheader("Final Results")
 st.dataframe(
@@ -506,7 +506,7 @@ def convert_for_download(df):
     return df.to_csv().encode("utf-8")
 
 
-csv = convert_for_download(filtered_df)
+csv = convert_for_download(final_piv)
 
 st.download_button(
     label="Download CSV",
