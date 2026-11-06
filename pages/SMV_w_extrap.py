@@ -109,7 +109,7 @@ date_piv = date_piv.drop(columns=['Date'])
 date_dict = dict(zip(date_piv.Source, date_piv['new date']))
 
 smv['Multiple'] = 1
-smv['Author'] = smv.apply(lambda row: row['Nickname'] if row['Author']== '' else row['Author'], axis=1)
+smv['Author'] = smv.apply(lambda row: row['Nickname'] if pd.isnull(row['Author']) else row['Author'], axis=1)
 
 smv_extrapolation['Country'] = 'Global'
 smv_extrapolation['Title']= ''
