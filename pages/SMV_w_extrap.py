@@ -8,6 +8,7 @@ st.sidebar.markdown("# Social Media Extrapolation 👊")
 
 st.write("This is designed to cut some time for dashboard uploads " \
 "to get the inital file into the template for uploading the file. ")
+st.write("For extrapolated rows create a sheet called 'Extrapolation1' and put the rows in that sheet in Cell A2 in the new sheet then upload")
 
 uploaded_file = st.file_uploader('Upload File Below:',type='.xlsx')
 
@@ -108,6 +109,7 @@ date_piv = date_piv.drop(columns=['Date'])
 date_dict = dict(zip(date_piv.Source, date_piv['new date']))
 
 smv['Multiple'] = 1
+smv['Author'] = smv.apply(lambda row: row['Author'] if row['Author']== '' else row['Nickname'], axis=1)
 
 smv_extrapolation['Country'] = 'Global'
 smv_extrapolation['Title']= ''
