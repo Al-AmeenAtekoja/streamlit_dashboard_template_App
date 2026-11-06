@@ -167,7 +167,7 @@ for i, uploaded_file in enumerate(uploaded_files):
 
     new_smve = pd.DataFrame({
         'Event ID': '',
-        'Data ID': final_smv_mentions[data_id_col] if data_id_col else '',
+        'Data ID': final_smv_exposure[data_id_col] if data_id_col else '',
         'Sponsor': final_smv_exposure[brand_col]if brand_col else '',
         'Asset': 'All Assets',
         'Team': '',
