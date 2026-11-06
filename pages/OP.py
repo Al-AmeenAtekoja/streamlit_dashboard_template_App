@@ -99,8 +99,8 @@ for i, uploaded_file in enumerate(uploaded_files):
 
     for i in range(len(uploaded_files)):
         st.download_button(
-            label = f"Download OP File{i}",
+            label = f"Download OP File{i+1}",
             data=output,
-            file_name=f"OP Upload {i}.xlsx",
-            mime=f"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet{i}",
-            key= f"name_{i}")
+            file_name=f"OP Upload {i+2}.xlsx",
+            mime=f"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet{i+3}",
+            key= f"name_{i+4}")
