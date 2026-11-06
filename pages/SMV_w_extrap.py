@@ -184,4 +184,9 @@ st.download_button(
       file_name="SMV Upload.xlsx",
       mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
 
-st.write( "After the file has been downloaded do these 3 things. 1. In downloaded file change date format to short date. 2. Change Duration format to time. 3. Change Visbility to percentage and you're all good to upload InshAllah!")
+st.markdown("Important info below 🚨🚨🚨")
+
+st.write( """After the file has been downloaded do these 3 things. 
+1. In downloaded file change date format to short date. 
+2. Change Duration format to time. 
+3. Change Visbility to percentage and you're all good to upload!""")
