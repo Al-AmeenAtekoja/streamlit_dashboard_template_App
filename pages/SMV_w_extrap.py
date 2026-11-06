@@ -130,8 +130,9 @@ final_smv_exposure = pd.concat([smv_exposure, smv_extrap_exposure])
 final_smv_mentions = pd.concat([smv, smv_extrapolation2])
 final_smv_mentions['Engagement'] = round(final_smv_mentions['Engagement'],0)
 final_smv_mentions['Views'] = round(final_smv_mentions['Views'],0)
+
 brand_col = next(
-      (col for col in ['Brand', 'Brands', 'Sponsor', 'Sponsors'] if col in smv_exposure.columns),
+      (col for col in ['Brand', 'Brands', 'Sponsor', 'Sponsors'] if col in final_smv_exposure.columns),
       None
 )
 
