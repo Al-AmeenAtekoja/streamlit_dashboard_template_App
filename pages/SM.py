@@ -54,9 +54,18 @@ for i, uploaded_file in enumerate(uploaded_files):
     clean_platform = {'x': 'X'}
     sm['Platform'] = sm['Platform'].replace(clean_platform)
 
+
+    data_id_col = next(
+        (col for col in ['Final Data ID', 'New Data ID'] if col in sm.columns),
+        None
+    )
+    brand_col = next(
+        (col for col in ['Brand', 'Brands', 'Sponsor'] if col in sme.columns),
+        None
+    )
     new_sm = pd.DataFrame({
         'Event ID': '',
-        'Data ID': sm['Data ID'],
+        'Data ID': sm[data_id_col] if data_id_col else '',
         'Country': sm['Country'],
         'Platform': sm['Platform'],
         'Date': sm['Date'],
@@ -74,8 +83,8 @@ for i, uploaded_file in enumerate(uploaded_files):
 
     new_sme = pd.DataFrame({
         'Event ID': '',
-        'Data ID': sme['Data ID'],
-        'Sponsor': sme['Sponsor'],
+        'Data ID': sme[data_id_col] if data_id_col else '',
+        'Sponsor': sme[brand_col] if brand_col else '',
         'Asset': sme['Asset'],
         'Team': '',
         'Participant': '',

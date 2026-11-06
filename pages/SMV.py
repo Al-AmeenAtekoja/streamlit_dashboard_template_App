@@ -62,7 +62,7 @@ for i, uploaded_file in enumerate(uploaded_files):
         'youtube.com' : 'Youtube'}
 
     smv_mentions['Source']    = smv_mentions['Source'].replace(clean_platform)
-
+    smv_mentions['Author'] = smv_mentions.apply(lambda row: row['Nickname'] if pd.isnull(row['Author'])  else row['Author'], axis=1)
     smv_monitored = smv_mentions.loc[smv_mentions['Monitored']=='Yes']
     cols = ['Data ID', 'Country', 'Source', 'Author', 'Title', 'Date', 'Duration', 'Views', 'Engagement', 'URL']
     not_cols = [c for c in smv_monitored.columns if c not in cols]
@@ -114,9 +114,18 @@ for i, uploaded_file in enumerate(uploaded_files):
     final_smv_mentions['Engagement'] = round(final_smv_mentions['Engagement'],0)
     final_smv_mentions['Views'] = round(final_smv_mentions['Views'],0)
 
+
+    data_id_col = next(
+        (col for col in ['Final Data ID', 'New Data ID'] if col in final_smv_mentions.columns),
+        None
+    )
+    brand_col = next(
+        (col for col in ['Brand', 'Brands', 'Sponsor'] if col in smv_exposure.columns),
+        None
+    )
     new_smv = pd.DataFrame({
         'Event ID':'',
-        'Data ID': final_smv_mentions['Data ID'],
+        'Data ID': final_smv_mentions[data_id_col] if data_id_col else '',
         'Country': final_smv_mentions['Country'],
         'Platform': final_smv_mentions['Source'],
         'Account': final_smv_mentions['Author'],
@@ -134,7 +143,7 @@ for i, uploaded_file in enumerate(uploaded_files):
     new_smve = pd.DataFrame({
         'Event ID': '',
         'Data ID': smv_exposure['Data ID'],
-        'Sponsor': smv_exposure['Brand'],
+        'Sponsor': smv_exposure[brand_col] if brand_col else '',
         'Asset': 'All Assets',
         'Team': '',
         'Participant': '',
