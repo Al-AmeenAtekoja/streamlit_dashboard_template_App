@@ -52,11 +52,11 @@ for i, uploaded_file in enumerate(uploaded_files):
                     st.rerun()
 
     data_id_col = next(
-        (col for col in ['Final Data ID', 'New Data ID'] if col in muckruck.columns),
+        (col for col in ['Final Data ID', 'New Data ID', 'Data ID'] if col in muckruck.columns),
         None
     )
     brand_col = next(
-        (col for col in ['Brand', 'Brands', 'Sponsor'] if col in exposure.columns),
+        (col for col in ['Brand', 'Brands', 'Sponsor','Sponsors'] if col in exposure.columns),
         None
     )
     new_muckruck = pd.DataFrame({

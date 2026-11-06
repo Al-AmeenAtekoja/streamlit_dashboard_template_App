@@ -56,11 +56,11 @@ for i, uploaded_file in enumerate(uploaded_files):
 
 
     data_id_col = next(
-        (col for col in ['Final Data ID', 'New Data ID'] if col in sm.columns),
+        (col for col in ['Final Data ID', 'New Data ID', 'Data ID'] if col in sm.columns),
         None
     )
     brand_col = next(
-        (col for col in ['Brand', 'Brands', 'Sponsor'] if col in sme.columns),
+        (col for col in ['Brand', 'Brands', 'Sponsor', 'Sponsors'] if col in sme.columns),
         None
     )
     new_sm = pd.DataFrame({
