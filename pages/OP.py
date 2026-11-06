@@ -100,9 +100,8 @@ for uploaded_file in uploaded_files:
 
     for i in range(len(uploaded_files)):
         st.download_button(
-            label = 'Download OP File',
+            label = f"Download OP File",
             data=output,
-            file_name="OP Upload.xlsx",
+            file_name=f"OP Upload.xlsx_{i}",
             mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
             key= f"delete_{i}")
-       
