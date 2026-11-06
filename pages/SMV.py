@@ -55,6 +55,7 @@ for i, uploaded_file in enumerate(uploaded_files):
     clean_platform = {
         'instagram.com': 'Instagram',
         'facebook.com': 'Facebook',
+        'FaceBook': 'Facebook',
         'x.com':  'X',
         'tiktok.com':   'Tiktok',
         'threads.com': 'Threads',
