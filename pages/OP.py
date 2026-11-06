@@ -2,8 +2,7 @@
 import streamlit as st
 import pandas as pd
 from io import BytesIO
-#import openpyxl
-#from pyxlsb import open_workbook as open_xlsb
+
 
 # Main page content
 st.markdown("# Online Press 🎈")
@@ -48,7 +47,7 @@ for uploaded_file in uploaded_files:
             exposure = data['Total Exposure']
             
 
-            for i in range(len(uploaded_file)):
+            for i in range(len(uploaded_files)):
                 st.success(f"Loaded {len(muckruck)} projects and {len(exposure)} summary rows.")
                 if st.button('Rerun', key=f"delete_{i}"):
                         st.rerun()
@@ -98,7 +97,7 @@ for uploaded_file in uploaded_files:
 
     output.seek(0)
 
-    for i in range(len(uploaded_file)):
+    for i in range(len(uploaded_files)):
         st.download_button(
             label = f"Download OP File",
             data=output,
