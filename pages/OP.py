@@ -13,7 +13,7 @@ st.write("This is designed to cut some time for dashboard uploads " \
 
 uploaded_files = st.file_uploader('Upload File Below:',type='.xlsx', accept_multiple_files=True)
 
-for uploaded_file in uploaded_files: 
+for i, uploaded_file in enumerate(uploaded_files): 
     if uploaded_file is None:
             st.info('Upload an Excel File to begin.')
             st.stop()
@@ -49,7 +49,7 @@ for uploaded_file in uploaded_files:
 
             for i in range(len(uploaded_files)):
                 st.success(f"Loaded {len(muckruck)} projects and {len(exposure)} summary rows.")
-                if st.button('Rerun', key=None):
+                if st.button('Rerun', key=f"name_{i}"):
                         st.rerun()
 
     data_id_col = next(
@@ -99,8 +99,8 @@ for uploaded_file in uploaded_files:
 
     for i in range(len(uploaded_files)):
         st.download_button(
-            label = f"Download OP File{i+1}",
+            label = f"Download OP File{i}",
             data=output,
             file_name=f"OP Upload {i}.xlsx",
-            mime=f"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet{i+3}",
-            key= None)
+            mime=f"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet{i}",
+            key= f"name_{i}")
