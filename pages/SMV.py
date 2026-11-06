@@ -20,7 +20,7 @@ for i, uploaded_file in enumerate(uploaded_files):
     with st.spinner('Putting in template', show_time=True):
             required_sheets = {
                     'Mentions': dict(header=0),
-                    'Exposure':  dict(header = 0 ),#usecols=['Data ID', 'Duration', 'Exposure', 'Brands', 'Visibility']),
+                    'Total Exposure':  dict(header = 0 ),#usecols=['Data ID', 'Duration', 'Exposure', 'Brands', 'Visibility']),
                     #'Extrapolation1': dict(header = 0)
                 }
             missing = []
