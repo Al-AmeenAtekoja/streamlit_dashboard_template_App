@@ -107,6 +107,7 @@ date_piv['new date'] = date_piv['Date'].apply(lambda x: str(x).split(' ')[0])
 date_piv = date_piv.drop(columns=['Date'])
 date_dict = dict(zip(date_piv.Source, date_piv['new date']))
 
+smv['Multiple'] = 1
 
 smv_extrapolation['Country'] = 'Global'
 smv_extrapolation['Title']= ''
@@ -121,6 +122,7 @@ smv_extrapolation['Spot Cost'] = round(((smv_extrapolation['Views']/1000) * smv_
 smv_extrapolation['Date'] = smv_extrapolation['Source'].apply(lambda x: date_dict['Instagram'] if x == 'Threads' else date_dict[x])
 smv_extrapolation['Extrapolate Size'] = smv_extrapolation['Extrapolate Size'].apply(lambda x: 1 if round(x,0)==0 else round(x,0))
 smv_extrapolation2 = smv_extrapolation.iloc[:,[0,12,11,16,17,1,10,3,2,4,13,14,15,9]]
+smv_extrapolation2 = smv_extrapolation2.rename({'Extrapolate Size' : 'Multiple'}, axis=1)
 
 cols = ['Data ID', 'Sponsors', 'Average of Visibility']
 smv_extrap_exposure = smv_extrapolation.drop(columns=[c for c in smv_extrapolation.columns if c not in cols])
@@ -151,8 +153,7 @@ new_smv = pd.DataFrame({
       '30 Second Spot Cost': final_smv_mentions['Spot Cost'],
       'Url': final_smv_mentions['URL'],
       'Keywords': final_smv_mentions['Data ID'],
-      'Multiple': 1,
-      'Extrapolate Size': final_smv_mentions['Extrapolate Size']
+      'Multiple': final_smv_exposure['Multiple']
 })
 
 new_smve = pd.DataFrame({
