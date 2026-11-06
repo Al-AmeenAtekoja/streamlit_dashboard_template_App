@@ -49,7 +49,7 @@ for uploaded_file in uploaded_files:
 
             for i in range(len(uploaded_files)):
                 st.success(f"Loaded {len(muckruck)} projects and {len(exposure)} summary rows.")
-                if st.button('Rerun', key=f"delete_{i}"):
+                if st.button('Rerun', key=None):
                         st.rerun()
 
     data_id_col = next(
@@ -103,4 +103,4 @@ for uploaded_file in uploaded_files:
             data=output,
             file_name=f"OP Upload {i}.xlsx",
             mime=f"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet{i+3}",
-            key= f"delete_{i+2}")
+            key= None)
