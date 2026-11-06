@@ -124,15 +124,14 @@ smv_extrapolation2 = smv_extrapolation.iloc[:,[0,12,11,16,17,1,10,3,2,4,13,14,15
 
 cols = ['Data ID', 'Sponsors', 'Average of Visibility']
 smv_extrap_exposure = smv_extrapolation.drop(columns=[c for c in smv_extrapolation.columns if c not in cols])
-smv_extrap_exposure
+smv_extrap_exposure = smv_extrap_exposure.rename({'Average of Visbility': 'Visibility'})
 
 final_smv_exposure = pd.concat([smv_exposure, smv_extrap_exposure])
 final_smv_mentions = pd.concat([smv, smv_extrapolation2])
 final_smv_mentions['Engagement'] = round(final_smv_mentions['Engagement'],0)
 final_smv_mentions['Views'] = round(final_smv_mentions['Views'],0)
-
 brand_col = next(
-      (col for col in ['Brand', 'Brands', 'Sponsor'] if col in smv_exposure.columns),
+      (col for col in ['Brand', 'Brands', 'Sponsor', 'Sponsors'] if col in smv_exposure.columns),
       None
 )
 
