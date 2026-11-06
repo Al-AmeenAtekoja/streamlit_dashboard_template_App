@@ -153,7 +153,7 @@ new_smv = pd.DataFrame({
       '30 Second Spot Cost': final_smv_mentions['Spot Cost'],
       'Url': final_smv_mentions['URL'],
       'Keywords': final_smv_mentions['Data ID'],
-      'Multiple': final_smv_exposure['Multiple']
+      'Multiple': final_smv_mentions['Multiple']
 })
 
 new_smve = pd.DataFrame({
