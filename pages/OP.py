@@ -47,12 +47,11 @@ for uploaded_file in uploaded_files:
             muckruck = data['MuckRuck Data']
             exposure = data['Total Exposure']
             
-            
-            st.success(f"Loaded {len(muckruck)} projects and {len(exposure)} summary rows.")
-            if st.button('Rerun', key="delete_1"):
-                    st.rerun()
-            if st.button("Rerun", key="delete_2"):
-                  st.rerun
+
+            for i in range(len(uploaded_files)):
+                st.success(f"Loaded {len(muckruck)} projects and {len(exposure)} summary rows.")
+                if st.button('Rerun', key="delete_" + i):
+                        st.rerun()
 
     data_id_col = next(
         (col for col in ['Final Data ID', 'New Data ID'] if col in muckruck.columns),
@@ -99,10 +98,11 @@ for uploaded_file in uploaded_files:
 
     output.seek(0)
 
-    st.download_button(
-        label = 'Download OP File',
-        data=output,
-        file_name="OP Upload.xlsx",
-        mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-        key='delete_1')
+    for i in range(len(uploaded_files)):
+        st.download_button(
+            label = 'Download OP File',
+            data=output,
+            file_name="OP Upload.xlsx",
+            mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+            key='delete_'+i)
        
