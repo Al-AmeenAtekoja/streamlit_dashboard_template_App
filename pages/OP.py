@@ -47,10 +47,9 @@ for i, uploaded_file in enumerate(uploaded_files):
             exposure = data['Total Exposure']
             
 
-            for i in range(len(uploaded_files)):
-                st.success(f"Loaded {len(muckruck)} projects and {len(exposure)} summary rows.")
-                if st.button('Rerun', key=f"rerun_{i}"):
-                        st.rerun()
+            st.success(f"Loaded {len(muckruck)} projects and {len(exposure)} summary rows.")
+            if st.button('Rerun', key=f"rerun_{i}"):
+                    st.rerun()
 
     data_id_col = next(
         (col for col in ['Final Data ID', 'New Data ID'] if col in muckruck.columns),
