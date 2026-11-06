@@ -101,6 +101,6 @@ for uploaded_file in uploaded_files:
         st.download_button(
             label = f"Download OP File",
             data=output,
-            file_name=f"OP Upload.xlsx_{i}",
+            file_name=f"OP Upload {i}.xlsx",
             mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-            key= f"delete_{i}")
+            key= f"delete_{i+1}")
