@@ -49,7 +49,7 @@ for i, uploaded_file in enumerate(uploaded_files):
 
             for i in range(len(uploaded_files)):
                 st.success(f"Loaded {len(muckruck)} projects and {len(exposure)} summary rows.")
-                if st.button('Rerun', key=f"name_{i}"):
+                if st.button('Rerun', key=f"rerun_{i}"):
                         st.rerun()
 
     data_id_col = next(
@@ -97,10 +97,9 @@ for i, uploaded_file in enumerate(uploaded_files):
 
     output.seek(0)
 
-    for i in range(len(uploaded_files)):
-        st.download_button(
-            label = f"Download OP File{i+1}",
-            data=output,
-            file_name=f"OP Upload {i+2}.xlsx",
-            mime=f"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet{i+3}",
-            key= f"name_{i+4}")
+    st.download_button(
+        label = f"Download OP File{i+1}",
+        data=output,
+        file_name=f"OP Upload {i+1}.xlsx",
+        mime=f"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        key= f"download_{i}")
