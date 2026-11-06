@@ -184,7 +184,7 @@ st.download_button(
       file_name="SMV Upload.xlsx",
       mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
 
-st.markdown("# Important info below 🚨🚨🚨")
+st.markdown("## Important info below 🚨🚨🚨")
 
 st.write( """After the file has been downloaded do these 3 things. 
 1. In downloaded file change date format to short date. 
