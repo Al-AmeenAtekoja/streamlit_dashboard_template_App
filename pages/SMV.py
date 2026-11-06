@@ -44,7 +44,7 @@ for i, uploaded_file in enumerate(uploaded_files):
                     st.stop()
             
             smv_mentions = data['Mentions']
-            smv_exposure = data['Exposure']
+            smv_exposure = data['Total Exposure']
             #smv_extrapolation = data['Extrapolation1']
             
             
