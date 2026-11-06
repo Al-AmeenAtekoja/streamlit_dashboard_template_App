@@ -1,7 +1,8 @@
-pip install openpyxl
+
 import streamlit as st
 import pandas as pd
 from io import BytesIO
+import openpyxl
 #from pyxlsb import open_workbook as open_xlsb
 
 # Main page content
