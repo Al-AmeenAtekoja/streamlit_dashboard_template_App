@@ -121,6 +121,12 @@ smv_extrapolation['Spot Cost'] = round(((smv_extrapolation['Views']/1000) * smv_
 smv_extrapolation['Date'] = smv_extrapolation['Source'].apply(lambda x: date_dict['Instagram'] if x == 'Threads' else date_dict[x])
 smv_extrapolation['Extrapolate Size'] = smv_extrapolation['Extrapolate Size'].apply(lambda x: 1 if round(x,0)==0 else round(x,0))
 smv_extrapolation2 = smv_extrapolation.iloc[:,[0,12,11,16,17,1,10,3,2,4,13,14,15,9]]
+
+cols = ['Data ID', 'Sponsors', 'Average of Visibility']
+smv_extrap_exposure = smv_extrapolation.drop(columns=[c for c in smv_extrapolation.columns if c not in cols])
+smv_extrap_exposure
+
+final_smv_exposure = pd.concat([smv_exposure, smv_extrap_exposure])
 final_smv_mentions = pd.concat([smv, smv_extrapolation2])
 final_smv_mentions['Engagement'] = round(final_smv_mentions['Engagement'],0)
 final_smv_mentions['Views'] = round(final_smv_mentions['Views'],0)
@@ -150,13 +156,13 @@ new_smv = pd.DataFrame({
 
 new_smve = pd.DataFrame({
     'Event ID': '',
-    'Data ID': smv_exposure['Data ID'],
-    'Sponsor': smv_exposure[brand_col]if brand_col else '',
+    'Data ID': final_smv_exposure['Data ID'],
+    'Sponsor': final_smv_exposure[brand_col]if brand_col else '',
     'Asset': 'All Assets',
     'Team': '',
     'Participant': '',
     'Host': '',
-    '% Visibility': smv_exposure['Visibility'],
+    '% Visibility': final_smv_exposure['Visibility'],
     'SIQ+': '',
     'Exposure Type': 1,
     'No of Seconds':0
