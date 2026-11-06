@@ -196,7 +196,4 @@ for i, uploaded_file in enumerate(uploaded_files):
             key= f"download_{i}")
 st.markdown("## Important info below 🚨🚨🚨")
 
-st.write( """After the file has been downloaded do these 3 things. 
-    1. In downloaded file change date format to short date. 
-    2. Change Duration format to time. 
-    3. Change Visbility to percentage and you're all good to upload!""")
+st.write( "After the file has been downloaded do these 3 things.\n1. In downloaded file change date format to short date.\n2. Change Duration format to time.\n3. Change Visbility to percentage and you're all good to upload!")
