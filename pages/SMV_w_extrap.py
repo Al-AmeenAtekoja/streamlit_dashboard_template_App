@@ -1,5 +1,6 @@
 import streamlit as st
 import pandas as pd
+import numpy as np
 from io import BytesIO
 
 st.markdown("# Social Media Video with Extrapolation 👊")
@@ -60,7 +61,7 @@ clean_platform = {
     'youtube.com' : 'Youtube'}
 
 smv_mentions['Source']    = smv_mentions['Source'].replace(clean_platform)
-
+smv_mentions['Author'] = smv_mentions.apply(lambda row: row['Nickname'] if pd.isnull(row['Author'])  else row['Author'], axis=1)
 smv_monitored = smv_mentions.loc[smv_mentions['Monitored']=='Yes']
 cols = ['Data ID', 'Country', 'Source', 'Author', 'Title', 'Date', 'Duration', 'Views', 'Engagement', 'URL']
 not_cols = [c for c in smv_monitored.columns if c not in cols]
@@ -109,7 +110,6 @@ date_piv = date_piv.drop(columns=['Date'])
 date_dict = dict(zip(date_piv.Source, date_piv['new date']))
 
 smv['Multiple'] = 1
-smv['Author'] = smv.apply(lambda row: row['Nickname'] if pd.isnull(row['Author']) else row['Author'], axis=1)
 
 smv_extrapolation['Country'] = 'Global'
 smv_extrapolation['Title']= ''
