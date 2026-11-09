@@ -87,7 +87,7 @@ pen_exposure = pd.concat([exposure, extrap_exposure])
 final_exposure = pd.pivot_table(
       pen_exposure, index=['Data ID', 'Brand'], values=['Discount'], aggfunc='sum'
 ).reset_index()
-final_exposure['Date'] = final_exposure['Dtae'].fillna(final_exposure['Date'].mean())
+final_exposure['Date'] = final_exposure['Date'].fillna(final_exposure['Date'].mean())
 
 # Map the combined source data to the upload template's required columns.
 new_muckruck = pd.DataFrame({
