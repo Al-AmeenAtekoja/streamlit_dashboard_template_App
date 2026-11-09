@@ -45,7 +45,7 @@ with st.spinner('Putting in template', show_time=True):
         
         muckruck = data['MuckRuck Data']
         exposure = data['Total Exposure']
-        extrapolated_rows = data['Extrapolation']
+        extrap = data['Extrapolation']
 
         
         st.success(f"Loaded {len(muckruck)} muckruck and {len(exposure)} Exposure rows.")
@@ -60,26 +60,36 @@ brand_col = next(
       (col for col in ['Brand', 'Brands', 'Sponsor'] if col in exposure.columns),
       None
 )
+
+extrap_mr = extrap.copy().dropna()
+extrap_exposure = extrap.copy().dropna()
+
+extrap_exposure = extrap_exposure.drop(columns=['Articles', 'Reach'])
+extrap_mr = extrap_mr.drop(columns=['Brand', 'Discount'])
+extrap_mr = extrap_mr.rename({'Articles': 'Multiple', 'Data ID': 'New Data ID'}, axis=1)
+final_mr = pd.concat([muckruck, extrap_mr])
+final_exposure = pd.concat([exposure, extrap_exposure])
+
 new_muckruck = pd.DataFrame({
       'Event ID': '',
-      'Data ID' : muckruck[data_id_col] if data_id_col else '',
-      'Country': muckruck['Country'],
-      'Publication': muckruck['Publication'],
-      'Headline': muckruck['Headline'],
-      'Date': muckruck['Date'],
-      'Rating': muckruck['Rating'],
-      'Reach': muckruck['Reach'],
-      'AVE ($)': muckruck['AVE ($)'],
-      'Sponsor Value ($)': muckruck['Sponsor Value ($)'],
-      'Url': muckruck['URL'],
-      'Keywords': muckruck['Keywords'],
-      'Multiple': 1
+      'Data ID' : final_mr[data_id_col] if data_id_col else '',
+      'Country': final_mr['Country'],
+      'Publication': final_mr['Publication'],
+      'Headline': final_mr['Headline'],
+      'Date': final_mr['Date'],
+      'Rating': final_mr['Rating'],
+      'Reach': final_mr['Reach'],
+      'AVE ($)': final_mr['AVE ($)'],
+      'Sponsor Value ($)': final_mr['Sponsor Value ($)'],
+      'Url': final_mr['URL'],
+      'Keywords': final_mr['Keywords'],
+      'Multiple': final['Multiple']
 })
 
 new_exposure = pd.DataFrame({
     'Event ID': '',
-    'Data ID': exposure['Data ID'],
-    'Sponsor': exposure[brand_col] if brand_col else '',
+    'Data ID': final_exposure['Data ID'],
+    'Sponsor': final_exposure[brand_col] if brand_col else '',
     'Asset': '',
     'Team': '',
     'Participant': '',
@@ -93,9 +103,13 @@ output = BytesIO()
 
 with pd.ExcelWriter(output, engine='openpyxl') as writer:
     new_muckruck.to_excel(writer, sheet_name='Online Press', index=False)
-    new_exposure.to_excel(writer, sheet_name='Online Press Exposure', index=False, float_format="%.2f")
+    new_exposure.to_excel(writer, sheet_name='Online Press Exposure', index=False)
 
 output.seek(0)
+
+st.subheader("Final Results")
+st.dataframe(new_muckruck)
+st.dataframe(new_exposure)
 
 st.download_button(
       label = 'Download OP File',
