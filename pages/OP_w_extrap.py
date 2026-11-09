@@ -53,7 +53,7 @@ with st.spinner('Putting in template', show_time=True):
                 st.rerun()
 
 data_id_col = next(
-      (col for col in ['Final Data ID', 'New Data ID'] if col in muckruck.columns),
+      (col for col in ['Final Data ID', 'New Data ID', 'Data ID'] if col in muckruck.columns),
       None
 )
 brand_col = next(
@@ -88,7 +88,7 @@ new_muckruck = pd.DataFrame({
 
 new_exposure = pd.DataFrame({
     'Event ID': '',
-    'Data ID': final_exposure['Data ID'],
+    'Data ID': final_exposure[data_id_col] if data_id_col else '',
     'Sponsor': final_exposure[brand_col] if brand_col else '',
     'Asset': '',
     'Team': '',
