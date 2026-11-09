@@ -11,7 +11,7 @@ st.sidebar.markdown("# Online Press with Extrapolation 😎")
 st.write("This is designed to cut some time for dashboard uploads " \
 "to get the inital file into the template for uploading the file. ")
 
-uploaded_file = st.file_uploader('Upload File Below:',type='.xlsx', accept_multiple_files=True)
+uploaded_file = st.file_uploader('Upload File Below:',type='.xlsx')
 
 if uploaded_file is None:
         st.info('Upload an Excel File to begin.')
@@ -35,13 +35,13 @@ with st.spinner('Putting in template', show_time=True):
                     st.error(f"Could not read sheet '{sheet}': {e}")
                     st.stop()
         
-        # if missing:
-        #         st.error(
-        #             "The uploaded file is missing the following required sheet(s):"
-        #             + ", ".join(f"**{m}**" for m in missing)
-        #             + ". Please check the file and re-upload."
-        #         )
-        #         st.stop()
+        if missing:
+                st.error(
+                    "The uploaded file is missing the following required sheet(s):"
+                    + ", ".join(f"**{m}**" for m in missing)
+                    + ". Please check the file and re-upload."
+                )
+                st.stop()
         
         muckruck = data['MuckRuck Data']
         exposure = data['Total Exposure']
