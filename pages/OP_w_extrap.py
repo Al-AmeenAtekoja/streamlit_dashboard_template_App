@@ -68,8 +68,8 @@ extrap_exposure = extrap_exposure.drop(columns=['Articles', 'Reach'])
 extrap_mr = extrap_mr.drop(columns=['Brand', 'Discount'])
 extrap_mr = extrap_mr.rename({'Articles': 'Multiple', 'Data ID': 'New Data ID'}, axis=1)
 extrap_mr['Keywords'] = extrap_mr['New Data ID']
-extrap_mr['Country'] = extrap_mr['Country'].fillna(value='Global')
 final_mr = pd.concat([muckruck, extrap_mr])
+final_mr['Country'] = final_mr['Country'].fillna(value='Global')
 final_exposure = pd.concat([exposure, extrap_exposure])
 
 new_muckruck = pd.DataFrame({
