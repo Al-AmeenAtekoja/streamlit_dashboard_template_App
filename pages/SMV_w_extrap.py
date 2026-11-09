@@ -138,7 +138,9 @@ for i, uploaded_file in enumerate(uploaded_files):
     final_smv_mentions['Engagement'] = round(final_smv_mentions['Engagement'],0)
     final_smv_mentions['Views'] = round(final_smv_mentions['Views'],0)
     final_smv_exposure['Visibility'] = final_smv_exposure['Visibility'].apply(lambda x: float(x))
-
+    final_smv_exposure = final_smv_exposure.style.format({
+            'Visibility %':    '{:.4f}'
+        })
     brand_col = next(
         (col for col in ['Brand', 'Brands', 'Sponsor', 'Sponsors'] if col in final_smv_exposure.columns),
         None
