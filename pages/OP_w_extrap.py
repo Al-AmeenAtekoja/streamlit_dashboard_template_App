@@ -18,6 +18,7 @@ if uploaded_file is None:
         st.stop()
 
 with st.spinner('Putting in template', show_time=True):
+    # The extrapolation worksheet has its headers on row nine; the others start on row one.
         required_sheets = {
                 'MuckRuck Data': dict(header=0),
                 'Total Exposure':  dict(header = 0),
@@ -35,6 +36,7 @@ with st.spinner('Putting in template', show_time=True):
                     st.error(f"Could not read sheet '{sheet}': {e}")
                     st.stop()
         
+        # Stop before transformation if any required worksheet could not be found.
         if missing:
                 st.error(
                     "The uploaded file is missing the following required sheet(s):"
@@ -56,11 +58,13 @@ data_id_col = next(
       (col for col in ['Final Data ID', 'New Data ID', 'Data ID'] if col in muckruck.columns),
       None
 )
+# Use the first recognized source headers when mapping optional IDs and sponsors.
 brand_col = next(
       (col for col in ['Brand', 'Brands', 'Sponsor'] if col in exposure.columns),
       None
 )
 
+# Prepare complete extrapolation rows separately for the mentions and exposure outputs.
 extrap_mr = extrap.copy().dropna()
 extrap_exposure = extrap.copy().dropna()
 
@@ -69,10 +73,15 @@ extrap_mr = extrap_mr.drop(columns=['Brand', 'Discount'])
 extrap_mr['Reach'] = round(extrap_mr['Reach'],0)
 extrap_mr = extrap_mr.rename({'Articles': 'Multiple', 'Data ID': 'New Data ID'}, axis=1)
 extrap_mr['Keywords'] = extrap_mr['New Data ID']
+# Append extrapolated articles and use Global where no country was supplied.
 final_mr = pd.concat([muckruck, extrap_mr])
 final_mr['Country'] = final_mr['Country'].fillna(value='Global')
-final_exposure = pd.concat([exposure, extrap_exposure])
+pen_exposure = pd.concat([exposure, extrap_exposure])
+final_exposure = pd.pivot_table(
+      pen_exposure, index=['Data ID', 'Brand'], values=['Discount'], aggfunc='sum'
+).reset_index()
 
+# Map the combined source data to the upload template's required columns.
 new_muckruck = pd.DataFrame({
       'Event ID': '',
       'Data ID' : final_mr[data_id_col] if data_id_col else '',
@@ -102,6 +111,7 @@ new_exposure = pd.DataFrame({
     'Image': '',
     'Discount %': final_exposure['Discount']
 })
+# Build the Excel download in memory rather than creating a temporary file.
 output = BytesIO()
 
 with pd.ExcelWriter(output, engine='openpyxl') as writer:
@@ -110,6 +120,7 @@ with pd.ExcelWriter(output, engine='openpyxl') as writer:
 
 output.seek(0)
 
+# Preview both output sheets before making the workbook available for download.
 st.subheader("Final Results")
 st.dataframe(new_muckruck)
 st.dataframe(new_exposure)

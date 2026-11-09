@@ -113,6 +113,9 @@ for i, uploaded_file in enumerate(uploaded_files):
             f"'{uploaded_file.name}' has no recognized brand/sponsor column; "
             "the output Sponsor field will be blank."
         )
+    final_exposure = pd.pivot_table(
+          exposure, index=['Data ID', 'Brand'], values=['Discount'], aggfunc='sum'
+    ).reset_index()
 
     try:
         new_muckruck = pd.DataFrame({
@@ -133,8 +136,8 @@ for i, uploaded_file in enumerate(uploaded_files):
 
         new_exposure = pd.DataFrame({
             'Event ID': '',
-            'Data ID': exposure['Data ID'],
-            'Sponsor': exposure[brand_col] if brand_col else '',
+            'Data ID': final_exposure['Data ID'],
+            'Sponsor': final_exposure[brand_col] if brand_col else '',
             'Asset': '',
             'Team': '',
             'Participant': '',
@@ -142,7 +145,7 @@ for i, uploaded_file in enumerate(uploaded_files):
             'Text': '',
             'Headline': '',
             'Image': '',
-            'Discount %': exposure['Discount']
+            'Discount %': final_exposure['Discount']
         })
         # Build the download workbook in memory instead of writing a temporary file.
         output = BytesIO()
