@@ -174,7 +174,7 @@ for i, uploaded_file in enumerate(uploaded_files):
         'Team': '',
         'Participant': '',
         'Host': '',
-        '% Visibility': float(final_smv_exposure['Visibility']),
+        '% Visibility': final_smv_exposure['Visibility'],
         'SIQ+': '',
         'Exposure Type': 1,
         'No of Seconds':0
