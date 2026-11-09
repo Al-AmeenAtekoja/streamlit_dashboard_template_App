@@ -122,7 +122,7 @@ for i, uploaded_file in enumerate(uploaded_files):
 
     smv_extrapolation['Engagement Rate'] = smv_extrapolation['Engagement']/ smv_extrapolation['Views']
     smv_extrapolation['CPT'] = smv_extrapolation['Source'].apply(lambda x: cpt_data[x])
-    smv_extrapolation['Spot Cost'] = round(((smv_extrapolation['Views']/1000) * smv_extrapolation['CPT']) * (1+smv_extrapolation['Engagement Rate']),0)
+    smv_extrapolation['Spot Cost'] = ((smv_extrapolation['Views']/1000) * smv_extrapolation['CPT']) * (1+smv_extrapolation['Engagement Rate'])
     smv_extrapolation['Date'] = smv_extrapolation['Source'].apply(lambda x: pd.to_datetime(date_dict['Instagram'], format='mixed', dayfirst=True) if x == 'Threads' else pd.to_datetime(date_dict[x], format = 'mixed', dayfirst=True))
     smv_extrapolation['Extrapolate Size'] = smv_extrapolation['Extrapolate Size'].apply(lambda x: 1 if round(x,0)==0 else round(x,0))
     smv_extrapolation2 = smv_extrapolation.iloc[:,[0,12,11,16,17,1,10,3,2,4,13,14,15,9]]
