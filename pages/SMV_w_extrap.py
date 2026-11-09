@@ -1,207 +1,375 @@
-import streamlit as st
-import pandas as pd
-import numpy as np
+import logging
 from io import BytesIO
 
-st.markdown("# Social Media Video with Extrapolation 👊")
-st.sidebar.markdown("# Social Media Extrapolation 👊")
+import pandas as pd
+import streamlit as st
+
+logger = logging.getLogger(__name__)
+
+PLATFORM_ALIASES = {
+    'instagram.com': 'Instagram',
+    'facebook.com': 'Facebook',
+    'FaceBook': 'Facebook',
+    'x.com': 'X',
+    'tiktok.com': 'Tiktok',
+    'threads.com': 'Threads',
+    'youtube.com': 'Youtube'
+}
+PLATFORM_CPT = {
+    'Facebook': 7.80,
+    'Instagram': 5.88,
+    'Youtube': 8.07,
+    'YouTube': 8.07,
+    'X': 9.07,
+    'Tiktok': 8.15,
+    'TikTok': 8.15,
+    'Threads': 4.00,
+    'Pinterest': 3.67,
+    'Bluesky': 4.00
+}
+ID_COLUMNS = ('Final Data ID', 'New Data ID', 'Data ID')
+BRAND_COLUMNS = ('Brand', 'Brands', 'Sponsor', 'Sponsors')
 
 
-st.write("This is designed to cut some time for dashboard uploads " \
-"to get the inital file into the template for uploading the file. ")
-st.write("For extrapolated rows create a sheet called 'Extrapolation1' and put the rows in that sheet in Cell A2 in the new sheet then upload")
+def build_extrapolated_upload(mentions, exposure, extrapolation):
+    """Prepare monitored and extrapolated rows for the video upload workbook."""
+    warnings = []
+    mentions = mentions.copy()
+    exposure = exposure.copy()
+    extrapolation = extrapolation.copy()
 
+    # Normalize source names and fill missing author names before filtering.
+    mentions['Source'] = mentions['Source'].astype('string').str.strip().replace(PLATFORM_ALIASES)
+    if 'Author' not in mentions.columns:
+        mentions['Author'] = pd.NA
+    mentions['Author'] = mentions['Author'].fillna(mentions['Nickname'])
+    monitored = mentions['Monitored'].astype('string').str.strip().str.casefold().eq('yes')
+    smv = mentions.loc[monitored].copy()
+    if smv.empty:
+        raise ValueError("no rows are marked 'Yes' in the Monitored column")
+    if (smv['Source'].isna() | smv['Source'].eq('')).any():
+        raise ValueError('one or more monitored rows are missing a platform/source')
 
-uploaded_files = st.file_uploader('Upload File Below:',type='.xlsx', accept_multiple_files=True)
+    # Standardize optional and alternate ID headers independently in each worksheet.
+    mention_id_col = next((col for col in ID_COLUMNS if col in smv.columns), None)
+    exposure_id_col = next((col for col in ID_COLUMNS if col in exposure.columns), None)
+    extrapolation_id_col = next((col for col in ID_COLUMNS if col in extrapolation.columns), None)
+    if mention_id_col is None:
+        smv['Data ID'] = ''
+        warnings.append('No recognized ID column was found in Mentions; output IDs are blank.')
+    else:
+        smv['Data ID'] = smv[mention_id_col]
+    if exposure_id_col is None:
+        raise ValueError('the Exposure worksheet needs a Data ID column')
+    if extrapolation_id_col is None:
+        raise ValueError('the Extrapolation1 worksheet needs a Data ID column')
+    extrapolation['Data ID'] = extrapolation[extrapolation_id_col]
 
-for i, uploaded_file in enumerate(uploaded_files):
-    if uploaded_file is None:
-            st.info('Upload an Excel File to begin.')
-            st.stop()
+    # Parse numeric source fields and reject malformed non-empty values early.
+    for frame, fields, label in (
+        (smv, ('Views', 'Engagement'), 'Mentions'),
+        (extrapolation, ('Average of Views', 'Average of Engagement', 'Average of Duration'), 'Extrapolation1')
+    ):
+        for column in fields:
+            original = frame[column]
+            frame[column] = pd.to_numeric(original, errors='coerce')
+            invalid_count = (original.notna() & frame[column].isna()).sum()
+            if invalid_count:
+                raise ValueError(f"{invalid_count} value(s) in {label}.{column} are not numeric")
 
-    with st.spinner('Putting in template', show_time=True):
-            required_sheets = {
-                    'Mentions': dict(header=0),
-                    'Exposure':  dict(header = 0 ),#usecols=['Data ID', 'Duration', 'Exposure', 'Brands', 'Visibility']),
-                    'Extrapolation1': dict(header = 0)
-                }
-            missing = []
-            data ={}
-            
-            for sheet , kwargs in required_sheets.items():
-                    try:
-                        data[sheet] =pd.read_excel(uploaded_file, sheet, **kwargs)
-                    except ValueError:
-                        missing.append(sheet)
-                    except Exception as e:
-                        st.error(f"Could not read sheet '{sheet}': {e}")
-                        st.stop()
-            
-            if missing:
-                    st.error(
-                        "The uploaded file is missing the following required sheet(s):"
-                        + ", ".join(f"**{m}**" for m in missing)
-                        + ". Please check the file and re-upload."
-                    )
-                    st.stop()
-            
-            smv_mentions = data['Mentions']
-            smv_exposure = data['Exposure']
-            smv_extrapolation = data['Extrapolation1']
-            
-            
-            st.success(f"Loaded {len(smv_mentions)} mentions, {len(smv_exposure)} exposure and {len(smv_extrapolation)} extrapolated rows.")
-            if st.button('Rerun',  key=f"rerun_{i}"):
-                    st.rerun()
+    extrapolation_sizes = pd.to_numeric(extrapolation['Extrapolate Size'], errors='coerce')
+    invalid_sizes = extrapolation['Extrapolate Size'].notna() & extrapolation_sizes.isna()
+    if invalid_sizes.any() or extrapolation_sizes.isna().any():
+        raise ValueError('Extrapolation1.Extrapolate Size contains missing or non-numeric values')
+    if extrapolation_sizes.lt(0).any():
+        raise ValueError('Extrapolation1.Extrapolate Size cannot be negative')
+    extrapolation['Multiple'] = extrapolation_sizes.round(0).replace(0, 1)
 
-    clean_platform = {
-        'instagram.com': 'Instagram',
-        'facebook.com': 'Facebook',
-        'x.com':  'X',
-        'tiktok.com':   'Tiktok',
-        'threads.com': 'Threads',
-        'youtube.com' : 'Youtube'}
-
-    smv_mentions['Source']    = smv_mentions['Source'].replace(clean_platform)
-    smv_mentions['Author'] = smv_mentions.apply(lambda row: row['Nickname'] if pd.isnull(row['Author'])  else row['Author'], axis=1)
-    smv_monitored = smv_mentions.loc[smv_mentions['Monitored']=='Yes']
-    cols = ['Data ID', 'Country', 'Source', 'Author', 'Title', 'Date', 'Duration', 'Views', 'Engagement', 'URL']
-    not_cols = [c for c in smv_monitored.columns if c not in cols]
-    smv = smv_monitored.drop(columns=not_cols)
-
-    smv['Engagement Rate'] = smv['Engagement']/ smv['Views']
-
-    platform_avg = pd.pivot_table(
-        smv, index='Source', values='Engagement Rate', aggfunc='mean'
-    )
-    platform_avg = platform_avg.reset_index()
-
-    d = {'Source' : ['Threads'], 'Engagement Rate': [0.073403]}
-    threads = pd.DataFrame(data=d)
-
-    plat_avg = pd.concat([platform_avg,threads])
-    plat_avg = plat_avg.reset_index()
-    plat_avg = plat_avg.drop(columns=['index'])
-    plat_dict = dict(zip(plat_avg.Source, plat_avg['Engagement Rate']))
-
-    smv['Engagement Rate'] = smv['Engagement Rate'].fillna(smv['Source'].map(plat_dict))
-    smv['Views'] = smv['Views'].fillna(round(smv['Engagement']/smv['Engagement Rate'],0))
-    cpt_data = {
-        'Facebook':7.80,
-        'Instagram':5.88,
-        'Youtube':8.07,
-        'YouTube':8.07,
-        'X':9.07,
-        'Tiktok':8.15,
-        'TikTok':8.15,
-        'Threads':4.00,
-        'Pinterest':3.67,
-        'Bluesky':4.00
-    }
-    smv['CPT'] = smv['Source'].apply(lambda x: cpt_data[x])
-    smv['Spot Cost'] = ((smv['Views']/1000) * smv['CPT']) * (1+smv['Engagement Rate'])
-    smv['Country'] = smv['Country'].fillna('Global')
-    smv['Date'] = pd.to_datetime(smv['Date'], format='mixed', dayfirst=True)
-
-    date_piv = pd.pivot_table(
-        smv, index='Source', values='Date', aggfunc='mean'
-    )
-    date_piv = date_piv.reset_index()
-    date_piv['new date'] = date_piv['Date'].apply(lambda x: str(x).split(' ')[0])
-    date_piv = date_piv.drop(columns=['Date'])
-    date_dict = dict(zip(date_piv.Source, date_piv['new date']))
-
-    smv['Multiple'] = 1
-
-    smv_extrapolation['Country'] = 'Global'
-    smv_extrapolation['Title']= ''
-    smv_extrapolation['Date'] = ''
-    smv_extrapolation['URL'] = 'Unspecified'
-    smv_extrapolation['Author'] = 'Unspecified'
-    smv_extrapolation = smv_extrapolation.rename({'Average of Duration': 'Duration', 'Average of Views': 'Views', 'Average of Engagement': 'Engagement', 'Row Labels': 'Source'},axis=1)
-
-    smv_extrapolation['Engagement Rate'] = smv_extrapolation['Engagement']/ smv_extrapolation['Views']
-    smv_extrapolation['CPT'] = smv_extrapolation['Source'].apply(lambda x: cpt_data[x])
-    smv_extrapolation['Spot Cost'] = ((smv_extrapolation['Views']/1000) * smv_extrapolation['CPT']) * (1+smv_extrapolation['Engagement Rate'])
-    smv_extrapolation['Date'] = smv_extrapolation['Source'].apply(lambda x: pd.to_datetime(date_dict['Instagram'], format='mixed', dayfirst=True) if x == 'Threads' else pd.to_datetime(date_dict[x], format = 'mixed', dayfirst=True))
-    smv_extrapolation['Extrapolate Size'] = smv_extrapolation['Extrapolate Size'].apply(lambda x: 1 if round(x,0)==0 else round(x,0))
-    smv_extrapolation2 = smv_extrapolation.iloc[:,[0,12,11,16,17,1,10,3,2,4,13,14,15,9]]
-    smv_extrapolation2 = smv_extrapolation2.rename({'Extrapolate Size' : 'Multiple'}, axis=1)
-
-    cols = ['Data ID', 'Sponsors', 'Average of Visibility']
-    smv_extrap_exposure = smv_extrapolation.drop(columns=[c for c in smv_extrapolation.columns if c not in cols])
-    smv_exposure = smv_exposure.drop(columns=['Duration','Exposure'])
-    smv_extrap_exposure = smv_extrap_exposure.rename({'Average of Visibility': 'Visibility', 'Sponsors': 'Brands'},axis=1)
-
-    final_smv_exposure = pd.concat([smv_exposure, smv_extrap_exposure])
-    final_smv_mentions = pd.concat([smv, smv_extrapolation2])
-    final_smv_mentions['Engagement'] = round(final_smv_mentions['Engagement'],0)
-    final_smv_mentions['Views'] = round(final_smv_mentions['Views'],0)
-    final_smv_exposure['Visibility'] = final_smv_exposure['Visibility'].apply(lambda x: float(x))
-    brand_col = next(
-        (col for col in ['Brand', 'Brands', 'Sponsor', 'Sponsors'] if col in final_smv_exposure.columns),
-        None
+    # Calculate monitored engagement rates while treating zero views as unavailable.
+    smv['Engagement Rate'] = smv['Engagement'].div(smv['Views'].where(smv['Views'].ne(0)))
+    platform_rates = smv.groupby('Source', dropna=True)['Engagement Rate'].mean().to_dict()
+    platform_rates['Threads'] = 0.073403
+    smv['Engagement Rate'] = smv['Engagement Rate'].fillna(smv['Source'].map(platform_rates))
+    smv['Views'] = smv['Views'].fillna(
+        smv['Engagement'].div(smv['Engagement Rate'].where(smv['Engagement Rate'].ne(0))).round(0)
     )
 
-    data_id_col = next(
-            (col for col in ['Final Data ID', 'New Data ID', 'Data ID'] if col in final_smv_mentions.columns),
-            None
+    # Parse dates before deriving average dates used by extrapolated rows.
+    original_dates = smv['Date']
+    smv['Date'] = pd.to_datetime(original_dates, errors='coerce', format='mixed', dayfirst=True)
+    invalid_dates = (original_dates.notna() & smv['Date'].isna()).sum()
+    if invalid_dates:
+        raise ValueError(f"{invalid_dates} date value(s) in Mentions could not be parsed")
+    dates_by_source = smv.groupby('Source', dropna=True)['Date'].mean().dropna().to_dict()
+
+    # Normalize extrapolation labels and calculate safe cost estimates.
+    extrapolation['Source'] = (
+        extrapolation['Row Labels'].astype('string').str.strip().replace(PLATFORM_ALIASES)
+    )
+    if (extrapolation['Source'].isna() | extrapolation['Source'].eq('')).any():
+        raise ValueError('one or more extrapolated rows are missing a platform/source')
+    extrapolation['Engagement'] = extrapolation['Average of Engagement']
+    extrapolation['Views'] = extrapolation['Average of Views']
+    extrapolation['Duration'] = extrapolation['Average of Duration']
+    extrapolation['Engagement Rate'] = extrapolation['Engagement'].div(
+        extrapolation['Views'].where(extrapolation['Views'].ne(0))
+    )
+    extrapolation['Engagement Rate'] = extrapolation['Engagement Rate'].fillna(
+        extrapolation['Source'].map(platform_rates)
+    )
+    extrapolation['Views'] = extrapolation['Views'].fillna(
+        extrapolation['Engagement'].div(
+            extrapolation['Engagement Rate'].where(extrapolation['Engagement Rate'].ne(0))
+        ).round(0)
+    )
+
+    # Reject unknown platforms and extrapolated platforms without a source date.
+    smv['CPT'] = smv['Source'].map(PLATFORM_CPT)
+    extrapolation['CPT'] = extrapolation['Source'].map(PLATFORM_CPT)
+    unknown_platforms = pd.concat([smv['Source'], extrapolation['Source']]).drop_duplicates()
+    unknown_platforms = unknown_platforms[
+        ~unknown_platforms.isin(PLATFORM_CPT)
+    ].dropna().tolist()
+    if unknown_platforms:
+        raise ValueError(f"unsupported platform value(s): {', '.join(map(str, unknown_platforms))}")
+
+    extrapolation_dates = []
+    for source in extrapolation['Source']:
+        date_source = 'Instagram' if source == 'Threads' else source
+        if date_source not in dates_by_source:
+            raise ValueError(f"no valid Mentions date is available for extrapolated platform '{source}'")
+        extrapolation_dates.append(dates_by_source[date_source])
+
+    # Build costs and warn when missing metrics prevent a complete estimate.
+    smv['Spot Cost'] = ((smv['Views'] / 1000) * smv['CPT']) * (1 + smv['Engagement Rate'])
+    extrapolation['Spot Cost'] = (
+        (extrapolation['Views'] / 1000) * extrapolation['CPT']
+    ) * (1 + extrapolation['Engagement Rate'])
+    unresolved_metrics = (
+        smv['Views'].isna().sum() + extrapolation['Views'].isna().sum()
+        + smv['Engagement Rate'].isna().sum() + extrapolation['Engagement Rate'].isna().sum()
+    )
+    if unresolved_metrics:
+        warnings.append(
+            f"{unresolved_metrics} metric value(s) could not be estimated; affected spot costs may be blank."
         )
+    smv['Country'] = smv['Country'].fillna('Global')
+    smv['Multiple'] = 1
+    smv['Engagement'] = smv['Engagement'].round(0)
+    smv['Views'] = smv['Views'].round(0)
 
-    new_smv = pd.DataFrame({
-        'Event ID':'',
-        'Data ID': final_smv_mentions[data_id_col] if data_id_col else '',
-        'Country': final_smv_mentions['Country'],
-        'Platform': final_smv_mentions['Source'],
-        'Account': final_smv_mentions['Author'],
-        'Video Title': final_smv_mentions['Title'],
-        'Date':final_smv_mentions['Date'],
-        'Duration': final_smv_mentions['Duration'],
-        'Views': final_smv_mentions['Views'],
-        'Engagement': final_smv_mentions['Engagement'],
-        '30 Second Spot Cost': final_smv_mentions['Spot Cost'],
-        'Url': final_smv_mentions['URL'],
-        'Keywords': final_smv_mentions['Data ID'],
-        'Multiple': final_smv_mentions['Multiple']
+    extrapolation_rows = pd.DataFrame({
+        'Data ID': extrapolation['Data ID'],
+        'Country': 'Global',
+        'Source': extrapolation['Source'],
+        'Author': 'Unspecified',
+        'Title': '',
+        'Date': extrapolation_dates,
+        'Duration': extrapolation['Duration'],
+        'Views': extrapolation['Views'].round(0),
+        'Engagement': extrapolation['Engagement'].round(0),
+        'Spot Cost': extrapolation['Spot Cost'],
+        'URL': 'Unspecified',
+        'Multiple': extrapolation['Multiple']
     })
+    mention_rows = smv[
+        ['Data ID', 'Country', 'Source', 'Author', 'Title', 'Date', 'Duration', 'Views',
+         'Engagement', 'Spot Cost', 'URL', 'Multiple']
+    ]
+    final_mentions = pd.concat([mention_rows, extrapolation_rows], ignore_index=True)
 
+    # Combine source and extrapolated exposure rows into the shared output schema.
+    brand_col = next((col for col in BRAND_COLUMNS if col in exposure.columns), None)
+    extrapolation_brand_col = next((col for col in BRAND_COLUMNS if col in extrapolation.columns), None)
+    if brand_col is None and extrapolation_brand_col is None:
+        warnings.append('No recognized brand/sponsor columns were found; output sponsors are blank.')
+
+    exposure_visibility = pd.to_numeric(exposure['Visibility'], errors='coerce')
+    invalid_visibility = exposure['Visibility'].notna() & exposure_visibility.isna()
+    extrapolated_visibility = pd.to_numeric(extrapolation['Average of Visibility'], errors='coerce')
+    invalid_extrapolated_visibility = (
+        extrapolation['Average of Visibility'].notna() & extrapolated_visibility.isna()
+    )
+    if invalid_visibility.any() or invalid_extrapolated_visibility.any():
+        raise ValueError('Visibility values in Exposure or Extrapolation1 must be numeric')
+
+    base_exposure_rows = pd.DataFrame({
+        'Data ID': exposure[exposure_id_col],
+        'Sponsor': exposure[brand_col] if brand_col else '',
+        'Visibility': exposure_visibility
+    })
+    extrapolated_exposure_rows = pd.DataFrame({
+        'Data ID': extrapolation['Data ID'],
+        'Sponsor': extrapolation[extrapolation_brand_col] if extrapolation_brand_col else '',
+        'Visibility': extrapolated_visibility
+    })
+    final_exposure = pd.concat(
+        [base_exposure_rows, extrapolated_exposure_rows], ignore_index=True
+    )
+
+    # Map the normalized tables to the upload template and create the workbook in memory.
+    new_smv = pd.DataFrame({
+        'Event ID': '',
+        'Data ID': final_mentions['Data ID'],
+        'Country': final_mentions['Country'],
+        'Platform': final_mentions['Source'],
+        'Account': final_mentions['Author'],
+        'Video Title': final_mentions['Title'],
+        'Date': final_mentions['Date'],
+        'Duration': final_mentions['Duration'],
+        'Views': final_mentions['Views'],
+        'Engagement': final_mentions['Engagement'],
+        '30 Second Spot Cost': final_mentions['Spot Cost'],
+        'Url': final_mentions['URL'],
+        'Keywords': final_mentions['Data ID'],
+        'Multiple': final_mentions['Multiple']
+    })
     new_smve = pd.DataFrame({
         'Event ID': '',
-        'Data ID': final_smv_exposure[data_id_col] if data_id_col else '',
-        'Sponsor': final_smv_exposure[brand_col]if brand_col else '',
+        'Data ID': final_exposure['Data ID'],
+        'Sponsor': final_exposure['Sponsor'],
         'Asset': 'All Assets',
         'Team': '',
         'Participant': '',
         'Host': '',
-        '% Visibility': final_smv_exposure['Visibility'],
+        '% Visibility': final_exposure['Visibility'],
         'SIQ+': '',
         'Exposure Type': 1,
-        'No of Seconds':0
+        'No of Seconds': 0
     })
 
     output = BytesIO()
-
     with pd.ExcelWriter(output, engine='openpyxl') as writer:
         new_smv.to_excel(writer, sheet_name='Social Media Videos', index=False)
         new_smve.to_excel(writer, sheet_name='Social Media Video Exposure', index=False)
-
     output.seek(0)
+    return final_mentions, final_exposure, new_smve, new_smv, output, warnings
 
 
-    st.subheader("Final Results")
-    st.dataframe(final_smv_mentions)
-    st.dataframe(
-    final_smv_exposure.style.format({
-        'Visibility %':    '{:.4f}'
-    })
+st.markdown("# Social Media Video with Extrapolation 👊")
+st.sidebar.markdown("# Social Media Extrapolation 👊")
+st.write("This is designed to cut some time for dashboard uploads " \
+"to get the inital file into the template for uploading the file. ")
+st.write(
+    "For extrapolated rows create a sheet called 'Extrapolation1' and put the rows "
+    "in that sheet in Cell A2 in the new sheet then upload"
 )
 
-    st.download_button(
-            label = f"Download Social Media Video File {i+1}",
-            data=output,
-            file_name=f"SMV Upload {i+1}.xlsx",
-            mime=f"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-            key= f"download_{i}")
-st.markdown("## Important info below 🚨🚨🚨")
+uploaded_files = st.file_uploader('Upload File Below:', type='.xlsx', accept_multiple_files=True)
+required_sheets = ('Mentions', 'Exposure', 'Extrapolation1')
+required_columns = {
+    'Mentions': (
+        'Source', 'Nickname', 'Monitored', 'Country', 'Title', 'Date', 'Duration',
+        'Views', 'Engagement', 'URL'
+    ),
+    'Exposure': ('Duration', 'Exposure', 'Visibility'),
+    'Extrapolation1': (
+        'Row Labels', 'Average of Duration', 'Average of Views', 'Average of Engagement',
+        'Extrapolate Size', 'Average of Visibility'
+    )
+}
 
-st.write( "After the file has been downloaded do these 3 things.\n1. In downloaded file change date format to short date.\n2. Change Duration format to time.\n3. Change Visbility to percentage and you're all good to upload!")
+if not uploaded_files:
+    st.info('Upload an Excel file to begin.')
+
+# Process workbooks independently so a bad upload does not stop later files.
+for i, uploaded_file in enumerate(uploaded_files):
+    if uploaded_file is None:
+        st.error('A selected upload could not be read. Please select the file again.')
+        continue
+
+    # Check workbook structure before parsing any sheet data.
+    try:
+        with st.spinner('Putting in template', show_time=True):
+            with pd.ExcelFile(uploaded_file) as workbook:
+                missing_sheets = [sheet for sheet in required_sheets if sheet not in workbook.sheet_names]
+                if not missing_sheets:
+                    data = {sheet: workbook.parse(sheet_name=sheet, header=0) for sheet in required_sheets}
+    except Exception:
+        logger.exception('Could not read uploaded workbook %s', uploaded_file.name)
+        st.error(
+            f"Could not read '{uploaded_file.name}'. Check that it is a valid, "
+            "unprotected .xlsx workbook and try again."
+        )
+        continue
+
+    if missing_sheets:
+        st.error(
+            f"'{uploaded_file.name}' is missing required worksheet(s): "
+            + ', '.join(missing_sheets)
+            + '. Please check the workbook and re-upload.'
+        )
+        continue
+
+    # Validate direct column dependencies and required data ID variants before conversion.
+    missing_columns = {
+        sheet: [column for column in columns if column not in data[sheet].columns]
+        for sheet, columns in required_columns.items()
+    }
+    missing_columns = {sheet: columns for sheet, columns in missing_columns.items() if columns}
+    if missing_columns:
+        details = '; '.join(
+            f"{sheet}: {', '.join(columns)}" for sheet, columns in missing_columns.items()
+        )
+        st.error(
+            f"'{uploaded_file.name}' is missing required column(s): {details}. "
+            "Please check the worksheet headers and re-upload."
+        )
+        continue
+
+    missing_ids = [
+        sheet for sheet in ('Exposure', 'Extrapolation1')
+        if not any(column in data[sheet].columns for column in ID_COLUMNS)
+    ]
+    if missing_ids:
+        st.error(
+            f"'{uploaded_file.name}' needs a recognized Data ID column in: "
+            + ', '.join(missing_ids)
+            + '.'
+        )
+        continue
+
+    st.success(
+        f"Loaded {len(data['Mentions'])} mentions, {len(data['Exposure'])} exposure rows, "
+        f"and {len(data['Extrapolation1'])} extrapolated rows."
+    )
+    if st.button('Rerun', key=f"rerun_{i}"):
+        st.rerun()
+
+    # Surface expected data problems to the user and retain tracebacks for unexpected failures.
+    try:
+        final_mentions, final_exposure, new_smve, new_smv, output, warnings = build_extrapolated_upload(
+            data['Mentions'], data['Exposure'], data['Extrapolation1']
+        )
+    except ValueError as error:
+        st.error(f"Could not process '{uploaded_file.name}': {error}.")
+        continue
+    except Exception:
+        logger.exception('Could not process uploaded workbook %s', uploaded_file.name)
+        st.error(
+            f"Could not process '{uploaded_file.name}'. Check the workbook contents and try again."
+        )
+        continue
+
+    for warning in warnings:
+        st.warning(f"{uploaded_file.name}: {warning}")
+
+    # Display processed data and provide the completed workbook.
+    st.subheader("Final Results")
+    st.dataframe(final_mentions)
+    st.dataframe(final_exposure)
+    st.download_button(
+        label=f"Download Social Media Video File {i + 1}",
+        data=output,
+        file_name=f"SMV Upload {i + 1}.xlsx",
+        mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        key=f"download_{i}"
+    )
+
+st.markdown("## Important info below 🚨🚨🚨")
+st.write(
+    "After the file has been downloaded do these 3 things.\n"
+    "1. In downloaded file change date format to short date.\n"
+    "2. Change Duration format to time.\n"
+    "3. Change Visibility to percentage and you're all good to upload!"
+)
