@@ -99,7 +99,7 @@ for i, uploaded_file in enumerate(uploaded_files):
         'Bluesky':4.00
     }
     smv['CPT'] = smv['Source'].apply(lambda x: cpt_data[x])
-    smv['Spot Cost'] = round(((smv['Views']/1000) * smv['CPT']) * (1+smv['Engagement Rate']),0)
+    smv['Spot Cost'] = ((smv['Views']/1000) * smv['CPT']) * (1+smv['Engagement Rate'])
     smv['Country'] = smv['Country'].fillna('Global')
     smv['Date'] = pd.to_datetime(smv['Date'], format='mixed', dayfirst=True)
 
