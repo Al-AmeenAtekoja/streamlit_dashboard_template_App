@@ -88,7 +88,7 @@ new_muckruck = pd.DataFrame({
 
 new_exposure = pd.DataFrame({
     'Event ID': '',
-    'Data ID': final_exposure[data_id_col] if data_id_col else '',
+    'Data ID': final_exposure['Data ID'],
     'Sponsor': final_exposure[brand_col] if brand_col else '',
     'Asset': '',
     'Team': '',
