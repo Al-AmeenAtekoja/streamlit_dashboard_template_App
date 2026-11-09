@@ -189,6 +189,13 @@ for i, uploaded_file in enumerate(uploaded_files):
     output.seek(0)
 
 
+    st.subheader("Final Results")
+    st.dataframe(
+    final_smv_exposure.style.format({
+        'Visibility %':    '{:.4f}'
+    })
+)
+
     st.download_button(
             label = f"Download Social Media Video File {i+1}",
             data=output,
