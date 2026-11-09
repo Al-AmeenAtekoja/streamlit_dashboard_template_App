@@ -138,9 +138,6 @@ for i, uploaded_file in enumerate(uploaded_files):
     final_smv_mentions['Engagement'] = round(final_smv_mentions['Engagement'],0)
     final_smv_mentions['Views'] = round(final_smv_mentions['Views'],0)
     final_smv_exposure['Visibility'] = final_smv_exposure['Visibility'].apply(lambda x: float(x))
-    final_smv_exposure = final_smv_exposure.style.format({
-            'Visibility %':    '{:.4f}'
-        })
     brand_col = next(
         (col for col in ['Brand', 'Brands', 'Sponsor', 'Sponsors'] if col in final_smv_exposure.columns),
         None
@@ -186,7 +183,7 @@ for i, uploaded_file in enumerate(uploaded_files):
 
     with pd.ExcelWriter(output, engine='openpyxl') as writer:
         new_smv.to_excel(writer, sheet_name='Social Media Videos', index=False)
-        new_smve.to_excel(writer, sheet_name='Social Media Video Exposure', index=False, float_format="%.2f")
+        new_smve.to_excel(writer, sheet_name='Social Media Video Exposure', index=False)
 
     output.seek(0)
 
