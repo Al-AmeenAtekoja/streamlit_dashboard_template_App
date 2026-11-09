@@ -97,7 +97,7 @@ new_exposure = pd.DataFrame({
     'Text': '',
     'Headline': '',
     'Image': '',
-    'Discount %': exposure['Discount']
+    'Discount %': final_exposure['Discount']
 }).reset_index()
 output = BytesIO()
 
