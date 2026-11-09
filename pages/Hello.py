@@ -8,7 +8,7 @@ page_4 = st.Page('SMV_w_extrap.py', title='Social Media Video with extrapolation
 page_5 = st.Page('OP_w_extrap.py', title='Online Press with extrapolation', icon='😎')
 
 # Set up navigation
-pg = st.navigation([main_page, page_2, page_3,page_4])#, page_5])
+pg = st.navigation([main_page, page_2, page_3,page_4, page_5])
 
 # Run the selected page
 pg.run()
