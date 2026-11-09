@@ -66,6 +66,7 @@ extrap_exposure = extrap.copy().dropna()
 
 extrap_exposure = extrap_exposure.drop(columns=['Articles', 'Reach'])
 extrap_mr = extrap_mr.drop(columns=['Brand', 'Discount'])
+extrap_mr['Reach'] = round(extrap_mr['Reach'],0)
 extrap_mr = extrap_mr.rename({'Articles': 'Multiple', 'Data ID': 'New Data ID'}, axis=1)
 extrap_mr['Keywords'] = extrap_mr['New Data ID']
 final_mr = pd.concat([muckruck, extrap_mr])
