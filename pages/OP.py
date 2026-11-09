@@ -114,7 +114,7 @@ for i, uploaded_file in enumerate(uploaded_files):
             "the output Sponsor field will be blank."
         )
     final_exposure = pd.pivot_table(
-          exposure, index=['Data ID', 'Brand'], values=['Discount'], aggfunc='sum'
+          exposure, index=['Data ID', brand_col], values=['Discount'], aggfunc='sum'
     ).reset_index()
 
     try:
