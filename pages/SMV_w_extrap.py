@@ -355,9 +355,12 @@ for i, uploaded_file in enumerate(uploaded_files):
         st.warning(f"{uploaded_file.name}: {warning}")
 
     # Display processed data and provide the completed workbook.
-    st.subheader("Final Results")
-    st.dataframe(final_mentions)
-    st.dataframe(final_exposure)
+    with st.expander('Final Results Check before Download'):
+        st.write("OP Data")
+        st.dataframe(final_mentions)
+        st.write("Exposure Data")
+        st.dataframe(final_exposure)
+
     st.download_button(
         label=f"Download Social Media Video File {i + 1}",
         data=output,

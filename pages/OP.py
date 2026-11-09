@@ -163,9 +163,13 @@ for i, uploaded_file in enumerate(uploaded_files):
         )
         continue
 
-    st.subheader("Final Results")
-    st.dataframe(new_muckruck)
-    st.dataframe(new_exposure)
+
+    with st.expander('Final Results Check before Download'):
+        st.write("OP Data")
+        st.dataframe(new_muckruck)
+        st.write("Exposure Data")
+        st.dataframe(new_exposure)
+
 
     st.download_button(
         label = f"Download OP File{i+1}",

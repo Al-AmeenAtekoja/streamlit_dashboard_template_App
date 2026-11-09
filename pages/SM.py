@@ -144,9 +144,12 @@ for i, uploaded_file in enumerate(uploaded_files):
         continue
 
     # Show the converted data and make the generated workbook available for download.
-    st.subheader("Final Results")
-    st.dataframe(new_sm)
-    st.dataframe(new_sme)
+    with st.expander('Final Results Check before Download'):
+        st.write("SM Static Data")
+        st.dataframe(new_sm)
+        st.write("Exposure Data")
+        st.dataframe(new_sme)
+
     st.download_button(
         label=f"Download Social Media Static File {i + 1}",
         data=output,

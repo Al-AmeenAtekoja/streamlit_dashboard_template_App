@@ -252,9 +252,13 @@ for i, uploaded_file in enumerate(uploaded_files):
         st.warning(f"{uploaded_file.name}: {warning}")
 
     # Display the converted data and expose the generated workbook for download.
-    st.subheader("Final Results")
-    st.dataframe(new_smv)
-    st.dataframe(new_smve.style.format({'% Visibility': '{:.4f}'}))
+
+    with st.expander('Final Results Check before Download'):
+        st.write("SMV Data")
+        st.dataframe(new_smv)
+        st.write("Exposure Data")
+        st.dataframe(new_smve.style.format({'% Visibility': '{:.4f}'}))
+
     st.download_button(
         label=f"Download Social Media Video File {i + 1}",
         data=output,
