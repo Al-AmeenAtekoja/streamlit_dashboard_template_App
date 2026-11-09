@@ -98,7 +98,7 @@ new_exposure = pd.DataFrame({
     'Headline': '',
     'Image': '',
     'Discount %': final_exposure['Discount']
-}).reset_index()
+})
 output = BytesIO()
 
 with pd.ExcelWriter(output, engine='openpyxl') as writer:
