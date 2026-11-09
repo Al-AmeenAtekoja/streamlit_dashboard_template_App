@@ -77,7 +77,7 @@ extrap_mr['Keywords'] = extrap_mr['New Data ID']
 # Append extrapolated articles and use Global where no country was supplied.
 final_mr = pd.concat([muckruck, extrap_mr])
 final_mr['Country'] = final_mr['Country'].fillna(value='Global')
-final_mr = final_mr[['Publication', 'Headline', 'URL']].fillna(value='Unspecified')
+#final_mr = final_mr[['Publication', 'Headline', 'URL']].fillna(value='Unspecified')
 pen_exposure = pd.concat([exposure, extrap_exposure])
 final_exposure = pd.pivot_table(
       pen_exposure, index=['Data ID', 'Brand'], values=['Discount'], aggfunc='sum'
