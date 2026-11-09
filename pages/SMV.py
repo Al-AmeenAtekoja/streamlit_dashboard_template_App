@@ -98,7 +98,7 @@ for i, uploaded_file in enumerate(uploaded_files):
         'Bluesky':4.00
     }
     smv['CPT'] = smv['Source'].apply(lambda x: cpt_data[x])
-    smv['Spot Cost'] = round(((smv['Views']/1000) * smv['CPT']) * (1+smv['Engagement Rate']),0)
+    smv['Spot Cost'] = ((smv['Views']/1000) * smv['CPT']) * (1+smv['Engagement Rate'])
     smv['Country'] = smv['Country'].fillna('Global')
     smv['Date'] = pd.to_datetime(smv['Date'])
 
@@ -158,10 +158,17 @@ for i, uploaded_file in enumerate(uploaded_files):
 
     with pd.ExcelWriter(output, engine='openpyxl') as writer:
         new_smv.to_excel(writer, sheet_name='Social Media Videos', index=False)
-        new_smve.to_excel(writer, sheet_name='Social Media Video Exposure', index=False, float_format="%.2f")
+        new_smve.to_excel(writer, sheet_name='Social Media Video Exposure', index=False)
 
     output.seek(0)
 
+    st.subheader("Final Results")
+    st.dataframe(new_smv)
+    st.dataframe(
+    new_smve.style.format({
+        'Visibility %':    '{:.4f}'
+    })
+)
 
 
     st.download_button(

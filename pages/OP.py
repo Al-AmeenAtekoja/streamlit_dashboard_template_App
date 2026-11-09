@@ -92,9 +92,13 @@ for i, uploaded_file in enumerate(uploaded_files):
 
     with pd.ExcelWriter(output, engine='openpyxl') as writer:
         new_muckruck.to_excel(writer, sheet_name='Online Press', index=False)
-        new_exposure.to_excel(writer, sheet_name='Online Press Exposure', index=False, float_format="%.2f")
+        new_exposure.to_excel(writer, sheet_name='Online Press Exposure', index=False)
 
     output.seek(0)
+
+    st.subheader("Final Results")
+    st.dataframe(new_muckruck)
+    st.dataframe(new_exposure)
 
     st.download_button(
         label = f"Download OP File{i+1}",

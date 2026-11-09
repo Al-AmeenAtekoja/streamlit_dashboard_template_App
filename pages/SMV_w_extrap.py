@@ -189,6 +189,7 @@ for i, uploaded_file in enumerate(uploaded_files):
 
 
     st.subheader("Final Results")
+    st.dataframe(final_smv_mentions)
     st.dataframe(
     final_smv_exposure.style.format({
         'Visibility %':    '{:.4f}'

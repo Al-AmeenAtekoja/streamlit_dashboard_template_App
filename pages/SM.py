@@ -100,9 +100,16 @@ for i, uploaded_file in enumerate(uploaded_files):
 
     with pd.ExcelWriter(output, engine='openpyxl') as writer:
         new_sm.to_excel(writer, sheet_name='Social Media', index=False)
-        new_sme.to_excel(writer, sheet_name='Social Media Exposure', index=False, float_format="%.2f")
+        new_sme.to_excel(writer, sheet_name='Social Media Exposure', index=False)
 
     output.seek(0)
+
+    st.subheader("Final Results")
+    st.dataframe(new_sm)
+    st.dataframe(
+    new_sme
+)
+
 
     st.download_button(
             label = f"Download Social Media Static File File{i+1}",
