@@ -83,7 +83,7 @@ new_muckruck = pd.DataFrame({
       'Sponsor Value ($)': final_mr['Sponsor Value ($)'],
       'Url': final_mr['URL'],
       'Keywords': final_mr['Keywords'],
-      'Multiple': final['Multiple']
+      'Multiple': final_mr['Multiple']
 })
 
 new_exposure = pd.DataFrame({
