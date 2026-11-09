@@ -73,9 +73,11 @@ extrap_mr = extrap_mr.drop(columns=['Brand', 'Discount'])
 extrap_mr['Reach'] = round(extrap_mr['Reach'],0)
 extrap_mr = extrap_mr.rename({'Articles': 'Multiple', 'Data ID': 'New Data ID'}, axis=1)
 extrap_mr['Keywords'] = extrap_mr['New Data ID']
+
 # Append extrapolated articles and use Global where no country was supplied.
 final_mr = pd.concat([muckruck, extrap_mr])
 final_mr['Country'] = final_mr['Country'].fillna(value='Global')
+final_mr['Publication'] = final_mr[['Publication', 'Headline', 'URL']].fillna(value='Unspecified')
 pen_exposure = pd.concat([exposure, extrap_exposure])
 final_exposure = pd.pivot_table(
       pen_exposure, index=['Data ID', 'Brand'], values=['Discount'], aggfunc='sum'
