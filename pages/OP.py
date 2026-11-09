@@ -177,3 +177,9 @@ for i, uploaded_file in enumerate(uploaded_files):
         file_name=f"OP Upload {i+1}.xlsx",
         mime=f"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
         key= f"download_{i}")
+
+    st.markdown("## Important info below 🚨🚨🚨")
+    st.write(
+            "After the file has been downloaded do these 3 things.\n"
+            "1. In downloaded file change date format to short date."
+        )
