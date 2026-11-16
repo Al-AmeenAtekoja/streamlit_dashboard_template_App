@@ -178,7 +178,6 @@ for i, uploaded_file in enumerate(uploaded_files):
         final_mr['Rating'] = final_mr['Rating'].fillna('Neutral')
         final_mr['AVE ($)'] = final_mr['AVE ($)'].fillna(0)
         final_mr['Sponsor Value ($)'] = final_mr['Sponsor Value ($)'].fillna(0)
-        final_exposure['Brand'] = final_exposure['Brand'].apply(lambda x)
 
         # Use the average source date for extrapolated rows, when source dates are valid.
         original_dates = muckruck['Date']
