@@ -111,7 +111,7 @@ def build_extrapolated_upload(mentions, exposure, extrapolation):
         raise ValueError('one or more extrapolated rows are missing a platform/source')
     extrapolation['Engagement'] = extrapolation['Average of Engagement']
     extrapolation['Views'] = extrapolation['Average of Views']
-    extrapolation['Duration'] = extrapolation['Average of Duration'].apply(lambda x : int(x))
+    extrapolation['Duration'] = extrapolation['Average of Duration']
     extrapolation['Engagement Rate'] = extrapolation['Engagement'].div(
         extrapolation['Views'].where(extrapolation['Views'].ne(0))
     )
