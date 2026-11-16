@@ -98,10 +98,6 @@ def build_extrapolated_upload(mentions, exposure, extrapolation):
     # Parse dates before deriving average dates used by extrapolated rows.
     original_dates = smv['Date']
     smv['Date'] = pd.to_datetime(original_dates, errors='coerce', format='mixed', dayfirst=True)
-    #instagram = smv.loc[smv['Source']=='Instagram']
-    #instagram_date = instagram['Date'].mean()
-    #smv['Date'] = smv.apply(lambda row: row['Date']==instagram_date if row['Source']=='TikTok' else row['Date'], axis=1)
-    #smv['Date'] = smv.loc[smv['Source']=='TikTok'].fillna(instagram_date)
     invalid_dates = (original_dates.notna() & smv['Date'].isna()).sum()
     if invalid_dates:
         raise ValueError(f"{invalid_dates} date value(s) in Mentions could not be parsed")
@@ -140,7 +136,7 @@ def build_extrapolated_upload(mentions, exposure, extrapolation):
 
     extrapolation_dates = []
     for source in extrapolation['Source']:
-        date_source = 'Instagram' if source == 'Threads' or source=='TikTok' else source
+        date_source = 'Instagram' if source == 'Threads'  else source
         if date_source not in dates_by_source:
             raise ValueError(f"no valid Mentions date is available for extrapolated platform '{source}'")
         extrapolation_dates.append(dates_by_source[date_source])
