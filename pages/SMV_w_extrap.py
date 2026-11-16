@@ -4,6 +4,7 @@ from io import BytesIO
 import datetime as dt
 import pandas as pd
 import streamlit as st
+from streamlit_dynamic_filters import DynamicFilters
 
 logger = logging.getLogger(__name__)
 
@@ -251,6 +252,7 @@ def build_extrapolated_upload(mentions, exposure, extrapolation):
     return final_mentions, final_exposure, new_smve, new_smv, output, warnings
 
 
+
 st.markdown("# Social Media Video with Extrapolation 👊")
 st.sidebar.markdown("# Social Media Extrapolation 👊")
 st.write("This is designed to cut some time for dashboard uploads " \
@@ -360,6 +362,9 @@ for i, uploaded_file in enumerate(uploaded_files):
         st.warning(f"{uploaded_file.name}: {warning}")
 
     # Display processed data and provide the completed workbook.
+    dynamic_filters = DynamicFilters(final_mentions,filters=['Platform'])
+    dynamic_filters.display_filters(location='sidebar')
+    dynamic_filters.display_df()
     with st.expander('Final Results Check before Download'):
         st.write("SMV Data")
         st.dataframe(final_mentions)
