@@ -214,7 +214,7 @@ def build_extrapolated_upload(mentions, exposure, extrapolation):
     final_exposure = pd.concat(
         [base_exposure_rows, extrapolated_exposure_rows], ignore_index=True
     )
-
+    final_exposure[brand_col] = final_exposure[brand_col].str.strip()
     # Map the normalized tables to the upload template and create the workbook in memory.
     new_smv = pd.DataFrame({
         'Event ID': '',
@@ -368,7 +368,6 @@ for i, uploaded_file in enumerate(uploaded_files):
         st.dataframe(new_smv)
         st.write("Exposure Data")
         st.dataframe(new_smve)
-        st.dataframe(extrapolation)
 
     st.download_button(
         label=f"Download Social Media Video File {i + 1}",

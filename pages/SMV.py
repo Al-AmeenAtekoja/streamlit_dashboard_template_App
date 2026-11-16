@@ -115,7 +115,7 @@ def build_video_upload(mentions, exposure):
     invalid_visibility = (original_visibility.notna() & exposure['Visibility'].isna()).sum()
     if invalid_visibility:
         raise ValueError(f"{invalid_visibility} value(s) in Total Exposure.Visibility are not numeric")
-
+    exposure[brand_col] = exposure[brand_col].str.strip()
     new_smv = pd.DataFrame({
         'Event ID': '',
         'Data ID': smv['Data ID'],

@@ -87,7 +87,7 @@ for i, uploaded_file in enumerate(uploaded_files):
     extrap_id_col = next((col for col in ID_COLUMNS if col in extrap.columns), None)
     exposure_brand_col = next((col for col in BRAND_COLUMNS if col in exposure.columns), None)
     extrap_brand_col = next((col for col in BRAND_COLUMNS if col in extrap.columns), None)
-    exposure['Brand'] = exposure['Brand'].str.strip()
+    exposure[exposure_brand_col] = exposure[exposure_brand_col].str.strip()
     if exposure_id_col is None or extrap_id_col is None:
         missing_id_sheets = []
         if exposure_id_col is None:

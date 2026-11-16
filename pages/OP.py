@@ -116,7 +116,7 @@ for i, uploaded_file in enumerate(uploaded_files):
     final_exposure = pd.pivot_table(
           exposure, index=['Data ID', brand_col], values=['Discount'], aggfunc='sum'
     ).reset_index()
-
+    exposure[brand_col] = exposure[brand_col].str.strip()
     try:
         new_muckruck = pd.DataFrame({
             'Event ID': '',

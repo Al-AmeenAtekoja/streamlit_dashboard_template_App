@@ -89,7 +89,7 @@ for i, uploaded_file in enumerate(uploaded_files):
         st.warning(f"'{uploaded_file.name}' has no recognized exposure ID column; output IDs will be blank.")
     if brand_col is None:
         st.warning(f"'{uploaded_file.name}' has no recognized brand/sponsor column; output sponsors will be blank.")
-
+    sme[brand_col] = sme[brand_col].str.strip()
     # Normalize source values and prepare the two upload-template tables.
     try:
         sm = sm.copy()
