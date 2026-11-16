@@ -98,9 +98,9 @@ def build_extrapolated_upload(mentions, exposure, extrapolation):
     # Parse dates before deriving average dates used by extrapolated rows.
     original_dates = smv['Date']
     smv['Date'] = pd.to_datetime(original_dates, errors='coerce', format='mixed', dayfirst=True)
-    instagram = smv.loc[smv['Source']=='Instagram']
-    instagram_date = instagram['Date'].mean()
-    smv['Date'] = smv.apply(lambda row: row['Date']==instagram_date if row['Source']=='TikTok' else row['Date'], axis=1)
+    #instagram = smv.loc[smv['Source']=='Instagram']
+    #instagram_date = instagram['Date'].mean()
+    #smv['Date'] = smv.apply(lambda row: row['Date']==instagram_date if row['Source']=='TikTok' else row['Date'], axis=1)
     #smv['Date'] = smv.loc[smv['Source']=='TikTok'].fillna(instagram_date)
     invalid_dates = (original_dates.notna() & smv['Date'].isna()).sum()
     if invalid_dates:
