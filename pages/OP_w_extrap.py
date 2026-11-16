@@ -226,7 +226,7 @@ for i, uploaded_file in enumerate(uploaded_files):
             'Image': '',
             'Discount %': final_exposure['Discount']
         })
-
+        new_muckruck['Country'] = new_muckruck['Country'].replace({'Czechia':'Czech Republic'})
         # Generate the Excel download in memory so no temporary file is needed.
         output = BytesIO()
         with pd.ExcelWriter(output, engine='openpyxl') as writer:
