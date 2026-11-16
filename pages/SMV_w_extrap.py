@@ -76,7 +76,7 @@ def build_extrapolated_upload(mentions, exposure, extrapolation):
     # Parse numeric source fields and reject malformed non-empty values early.
     for frame, fields, label in (
         (smv, ('Views', 'Engagement'), 'Mentions'),
-        (extrapolation, ('Average of Views', 'Average of Engagement', 'Average of Duration'), 'Extrapolation1')
+        (extrapolation, ('Average of Views', 'Average of Engagement'), 'Extrapolation1')
     ):
         for column in fields:
             original = frame[column]
