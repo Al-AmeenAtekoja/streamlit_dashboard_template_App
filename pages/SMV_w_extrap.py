@@ -33,7 +33,7 @@ BRAND_COLUMNS = ('Brand', 'Brands', 'Sponsor', 'Sponsors')
 def format_duration(value):
     if pd.isna(value):
         return ''
-    total_seconds = int(pd.to_timedelta(value).total_seconds())
+    total_seconds = int(value.total_seconds())
     hours, remainder = divmod(abs(total_seconds), 3600)
     minutes, seconds = divmod(remainder, 60)
     sign = '-' if total_seconds < 0 else ''
