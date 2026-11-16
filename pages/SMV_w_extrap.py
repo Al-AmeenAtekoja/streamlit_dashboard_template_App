@@ -1,6 +1,7 @@
 import logging
 from io import BytesIO
 
+import datetime as dt
 import pandas as pd
 import streamlit as st
 
@@ -95,8 +96,11 @@ def build_extrapolated_upload(mentions, exposure, extrapolation):
     )
 
     # Parse dates before deriving average dates used by extrapolated rows.
+    instagram = smv.loc[smv['Source']=='Instagram']
+    instagram_date = instagram['Date'].mean()
     original_dates = smv['Date']
     smv['Date'] = pd.to_datetime(original_dates, errors='coerce', format='mixed', dayfirst=True)
+    smv['Date'] = smv.loc[smv['Source']=='Instagram'].fillna(instagram_date)
     invalid_dates = (original_dates.notna() & smv['Date'].isna()).sum()
     if invalid_dates:
         raise ValueError(f"{invalid_dates} date value(s) in Mentions could not be parsed")
