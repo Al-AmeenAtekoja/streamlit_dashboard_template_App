@@ -96,10 +96,10 @@ def build_extrapolated_upload(mentions, exposure, extrapolation):
     )
 
     # Parse dates before deriving average dates used by extrapolated rows.
-    instagram = smv.loc[smv['Source']=='Instagram']
-    instagram_date = instagram['Date'].mean()
     original_dates = smv['Date']
     smv['Date'] = pd.to_datetime(original_dates, errors='coerce', format='mixed', dayfirst=True)
+    instagram = smv.loc[smv['Source']=='Instagram']
+    instagram_date = instagram['Date'].mean()
     smv['Date'] = smv.loc[smv['Source']=='Instagram'].fillna(instagram_date)
     invalid_dates = (original_dates.notna() & smv['Date'].isna()).sum()
     if invalid_dates:
@@ -360,7 +360,7 @@ for i, uploaded_file in enumerate(uploaded_files):
 
     # Display processed data and provide the completed workbook.
     with st.expander('Final Results Check before Download'):
-        st.write("OP Data")
+        st.write("SMV Data")
         st.dataframe(final_mentions)
         st.write("Exposure Data")
         st.dataframe(final_exposure)
