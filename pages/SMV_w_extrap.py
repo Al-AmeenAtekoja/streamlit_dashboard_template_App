@@ -238,7 +238,7 @@ def build_extrapolated_upload(mentions, exposure, extrapolation):
         'Exposure Type': 1,
         'No of Seconds': 0
     })
-    new_smv['Duration'] = new_smv['Duration'].apply(lambda x: float(x))
+    new_smv['Duration'] = new_smv['Duration'].apply(lambda x: int(x))
     output = BytesIO()
     with pd.ExcelWriter(output, engine='openpyxl') as writer:
         new_smv.to_excel(writer, sheet_name='Social Media Videos', index=False)
