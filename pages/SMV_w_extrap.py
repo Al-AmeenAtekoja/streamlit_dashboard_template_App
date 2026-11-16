@@ -30,7 +30,14 @@ PLATFORM_CPT = {
 }
 ID_COLUMNS = ('Final Data ID', 'New Data ID', 'Data ID')
 BRAND_COLUMNS = ('Brand', 'Brands', 'Sponsor', 'Sponsors')
-
+def format_duration(value):
+    if pd.isna(value):
+        return ''
+    total_seconds = int(pd.to_timedelta(value).total_seconds())
+    hours, remainder = divmod(abs(total_seconds), 3600)
+    minutes, seconds = divmod(remainder, 60)
+    sign = '-' if total_seconds < 0 else ''
+    return f'{sign}{hours:02}:{minutes:02}:{seconds:02}'
 
 def build_extrapolated_upload(mentions, exposure, extrapolation):
     """Prepare monitored and extrapolated rows for the video upload workbook."""
@@ -111,7 +118,7 @@ def build_extrapolated_upload(mentions, exposure, extrapolation):
         raise ValueError('one or more extrapolated rows are missing a platform/source')
     extrapolation['Engagement'] = extrapolation['Average of Engagement']
     extrapolation['Views'] = extrapolation['Average of Views']
-    extrapolation['Duration'] = str(extrapolation['Average of Duration'])
+    extrapolation['Duration'] = str(extrapolation['Average of Duration']).apply(lambda x: format_duration(x))
     extrapolation['Engagement Rate'] = extrapolation['Engagement'].div(
         extrapolation['Views'].where(extrapolation['Views'].ne(0))
     )
