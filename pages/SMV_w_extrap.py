@@ -140,7 +140,7 @@ def build_extrapolated_upload(mentions, exposure, extrapolation):
 
     extrapolation_dates = []
     for source in extrapolation['Source']:
-        date_source = 'Instagram' if source == 'Threads' else source
+        date_source = 'Instagram' if source == 'Threads' or source=='TikTok' else source
         if date_source not in dates_by_source:
             raise ValueError(f"no valid Mentions date is available for extrapolated platform '{source}'")
         extrapolation_dates.append(dates_by_source[date_source])
