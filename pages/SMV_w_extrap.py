@@ -257,7 +257,7 @@ def build_extrapolated_upload(mentions, exposure, extrapolation):
 st.markdown("# Social Media Video with Extrapolation 👊")
 st.sidebar.markdown("# Social Media Extrapolation 👊")
 st.write("This is designed to cut some time for dashboard uploads " \
-"to get the inital file into the template for uploading the file. ")
+"to get the inital file into the template for uploading the file. Only Accepts Excel Files")
 st.write(
     "For extrapolated rows create a sheet called 'Extrapolation1' and put the rows "
     "in that sheet in Cell A2 in the new sheet then upload"

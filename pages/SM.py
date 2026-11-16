@@ -10,7 +10,7 @@ st.markdown("# Social Media ❄️")
 st.sidebar.markdown("# Social Media ❄️")
 
 st.write("This is designed to cut some time for dashboard uploads " \
-"to get the inital file into the template for uploading the file. ")
+"to get the inital file into the template for uploading the file. Only Accepts Excel Files")
 
 uploaded_files = st.file_uploader('Upload File Below:', type='.xlsx', accept_multiple_files=True)
 

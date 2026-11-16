@@ -14,7 +14,7 @@ BRAND_COLUMNS = ('Brand', 'Brands', 'Sponsor', 'Sponsors')
 st.markdown("# Online Press with Extrapolation 😎")
 st.sidebar.markdown("# Online Press with Extrapolation 😎")
 st.write("This is designed to cut some time for dashboard uploads " \
-"to get the inital file into the template for uploading the file./n Only Accepts Excel Files")
+"to get the inital file into the template for uploading the file. Only Accepts Excel Files")
 
 uploaded_files = st.file_uploader('Upload File Below:', type='.xlsx', accept_multiple_files=True)
 required_sheets = ('MuckRuck Data', 'Total Exposure', 'Extrapolation')
