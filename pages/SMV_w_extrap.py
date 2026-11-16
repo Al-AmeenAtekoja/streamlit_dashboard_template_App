@@ -238,7 +238,7 @@ def build_extrapolated_upload(mentions, exposure, extrapolation):
         'Exposure Type': 1,
         'No of Seconds': 0
     })
-
+    new_smv['Duration'] = new_smv['Duration'].apply(lambda x: pd.to_numeric(x))
     output = BytesIO()
     with pd.ExcelWriter(output, engine='openpyxl') as writer:
         new_smv.to_excel(writer, sheet_name='Social Media Videos', index=False)
@@ -359,9 +359,9 @@ for i, uploaded_file in enumerate(uploaded_files):
     # Display processed data and provide the completed workbook.
     with st.expander('Final Results Check before Download'):
         st.write("SMV Data")
-        st.dataframe(final_mentions)
+        st.dataframe(new_smv)
         st.write("Exposure Data")
-        st.dataframe(final_exposure)
+        st.dataframe(new_smve)
 
     st.download_button(
         label=f"Download Social Media Video File {i + 1}",
