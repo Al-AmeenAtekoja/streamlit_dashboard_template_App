@@ -243,7 +243,7 @@ def build_extrapolated_upload(mentions, exposure, extrapolation):
         new_smv.to_excel(writer, sheet_name='Social Media Videos', index=False)
         new_smve.to_excel(writer, sheet_name='Social Media Video Exposure', index=False)
     output.seek(0)
-    return final_mentions, final_exposure, new_smve, new_smv, output, warnings
+    return final_mentions, final_exposure, new_smve, new_smv, output, warnings, extrapolation
 
 
 
@@ -339,7 +339,7 @@ for i, uploaded_file in enumerate(uploaded_files):
 
     # Surface expected data problems to the user and retain tracebacks for unexpected failures.
     try:
-        final_mentions, final_exposure, new_smve, new_smv, output, warnings = build_extrapolated_upload(
+        final_mentions, final_exposure, new_smve, new_smv, output, warnings, extrapolation = build_extrapolated_upload(
             data['Mentions'], data['Exposure'], data['Extrapolation1']
         )
     except ValueError as error:
@@ -361,6 +361,7 @@ for i, uploaded_file in enumerate(uploaded_files):
         st.dataframe(new_smv)
         st.write("Exposure Data")
         st.dataframe(new_smve)
+        st.dataframe(extrapolation)
 
     st.download_button(
         label=f"Download Social Media Video File {i + 1}",
