@@ -20,3 +20,7 @@ st.write(
     "3. The sheet that contains all the exposure should be renamed to 'Total Exposure.\n"
     "4. For OP with Extrap you should have the tabs 'MuckRuck Data', 'Total Exposure', 'Extrapolation1' and for SMV with Extrap you should have 'Mentions', 'Total Exposure', 'Extrapolation1'"
 )
+
+st.markdown("## What to do after")
+
+st.write("After you have downloaded the file the date is going to be in timestamp format so all you have to do is in excel change format to short date.\n Any other specifc changes will be on the relevant page for the media type")
