@@ -1,6 +1,6 @@
 import streamlit as st
 
-st.markdown("# Instructions 🛑")
+st.markdown("# Instructions 🛑", text_alignment='center')
 
 st.write("Some Instructions on how to use the tool and how to get your file in the correct format before uploading.")
 
