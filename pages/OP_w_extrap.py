@@ -16,7 +16,7 @@ st.sidebar.markdown("# Online Press with Extrapolation 😎")
 st.write("This is designed to cut some time for dashboard uploads " \
 "to get the inital file into the template for uploading the file. Only Accepts Excel Files")
 
-event_id = st.number_input(label = "Input Event ID:", value=0, max_value=20000,format="%.0f")
+event_id = st.number_input(label = "Input Event ID:", value=0, max_value=2000000,format="%.0f")
 uploaded_files = st.file_uploader('Upload File Below:', type=['.xlsx', 'xlsm'], accept_multiple_files=True)
 required_sheets = ('MuckRuck Data', 'Total Exposure', 'Extrapolation1')
 required_columns = {

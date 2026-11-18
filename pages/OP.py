@@ -14,6 +14,7 @@ st.sidebar.markdown("# Online Press 🎈")
 st.write("This is designed to cut some time for dashboard uploads " \
 "to get the inital file into the template for uploading the file. Only Accepts Excel Files")
 
+event_id = st.number_input(label = "Input Event ID:", value=0, max_value=2000000,format="%.0f")
 uploaded_files = st.file_uploader('Upload File Below:',type=['.xlsx', 'xlsm'], accept_multiple_files=True)
 
 if not uploaded_files:
@@ -119,7 +120,7 @@ for i, uploaded_file in enumerate(uploaded_files):
     exposure[brand_col] = exposure[brand_col].str.strip()
     try:
         new_muckruck = pd.DataFrame({
-            'Event ID': '',
+            'Event ID': event_id,
             'Data ID' : muckruck[data_id_col] if data_id_col else '',
             'Country': muckruck['Country'],
             'Publication': muckruck['Publication'],
@@ -135,7 +136,7 @@ for i, uploaded_file in enumerate(uploaded_files):
         })
 
         new_exposure = pd.DataFrame({
-            'Event ID': '',
+            'Event ID': event_id,
             'Data ID': final_exposure['Data ID'],
             'Sponsor': final_exposure[brand_col] if brand_col else '',
             'Asset': '',

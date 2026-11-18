@@ -7,7 +7,7 @@ import streamlit as st
 logger = logging.getLogger(__name__)
 
 
-def build_video_upload(mentions, exposure):
+def build_video_upload(mentions, exposure, event_id):
     """Convert validated source tables into the video upload workbook."""
     warnings = []
     mentions = mentions.copy()
@@ -117,7 +117,7 @@ def build_video_upload(mentions, exposure):
         raise ValueError(f"{invalid_visibility} value(s) in Total Exposure.Visibility are not numeric")
     exposure[brand_col] = exposure[brand_col].str.strip()
     new_smv = pd.DataFrame({
-        'Event ID': '',
+        'Event ID': event_id,
         'Data ID': smv['Data ID'],
         'Country': smv['Country'],
         'Platform': smv['Source'],
@@ -133,7 +133,7 @@ def build_video_upload(mentions, exposure):
         'Multiple': 1
     })
     new_smve = pd.DataFrame({
-        'Event ID': '',
+        'Event ID': event_id,
         'Data ID': exposure[exposure_id_col],
         'Sponsor': exposure[brand_col] if brand_col else '',
         'Asset': 'All Assets',
@@ -159,7 +159,7 @@ st.markdown("# Social Media Video 🎉")
 st.sidebar.markdown("# Social Media 🎉")
 st.write("This is designed to cut some time for dashboard uploads " \
 "to get the inital file into the template for uploading the file. Only Accepts Excel Files")
-
+event_id = st.number_input(label = "Input Event ID:", value=0, max_value=2000000,format="%.0f")
 uploaded_files = st.file_uploader('Upload File Below:', type=['.xlsx', 'xlsm'], accept_multiple_files=True)
 required_sheets = ('Mentions', 'Total Exposure')
 required_columns = {
@@ -236,7 +236,7 @@ for i, uploaded_file in enumerate(uploaded_files):
     # Keep detailed diagnostics in logs and show validation or safe fallback messages in the app.
     try:
         new_smv, new_smve, output, warnings = build_video_upload(
-            data['Mentions'], data['Total Exposure']
+            data['Mentions'], data['Total Exposure'], event_id
         )
     except ValueError as error:
         st.error(f"Could not process '{uploaded_file.name}': {error}.")

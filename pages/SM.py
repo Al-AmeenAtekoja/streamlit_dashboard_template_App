@@ -12,6 +12,7 @@ st.sidebar.markdown("# Social Media ❄️")
 st.write("This is designed to cut some time for dashboard uploads " \
 "to get the inital file into the template for uploading the file. Only Accepts Excel Files")
 
+event_id = st.number_input(label = "Input Event ID:", value=0, max_value=2000000,format="%.0f")
 uploaded_files = st.file_uploader('Upload File Below:', type=['.xlsx', 'xlsm'], accept_multiple_files=True)
 
 required_sheets = ('Social Media', 'Social Media Exposure')
@@ -98,7 +99,7 @@ for i, uploaded_file in enumerate(uploaded_files):
         sm['Platform'] = sm['Platform'].replace({'x': 'X'})
 
         new_sm = pd.DataFrame({
-            'Event ID': '',
+            'Event ID': event_id,
             'Data ID': sm[sm_id_col] if sm_id_col else '',
             'Country': sm['Country'],
             'Platform': sm['Platform'],
@@ -116,7 +117,7 @@ for i, uploaded_file in enumerate(uploaded_files):
         })
 
         new_sme = pd.DataFrame({
-            'Event ID': '',
+            'Event ID': event_id,
             'Data ID': sme[exposure_id_col] if exposure_id_col else '',
             'Sponsor': sme[brand_col] if brand_col else '',
             'Asset': sme['Asset'],

@@ -39,7 +39,7 @@ def format_duration(value):
     sign = '-' if total_seconds < 0 else ''
     return f'{sign}{hours:02}:{minutes:02}:{seconds:02}'
 
-def build_extrapolated_upload(mentions, exposure, extrapolation):
+def build_extrapolated_upload(mentions, exposure, extrapolation, event_id):
     """Prepare monitored and extrapolated rows for the video upload workbook."""
     warnings = []
     mentions = mentions.copy()
@@ -217,7 +217,7 @@ def build_extrapolated_upload(mentions, exposure, extrapolation):
     
     # Map the normalized tables to the upload template and create the workbook in memory.
     new_smv = pd.DataFrame({
-        'Event ID': '',
+        'Event ID': event_id,
         'Data ID': final_mentions['Data ID'],
         'Country': final_mentions['Country'],
         'Platform': final_mentions['Source'],
@@ -233,7 +233,7 @@ def build_extrapolated_upload(mentions, exposure, extrapolation):
         'Multiple': final_mentions['Multiple']
     })
     new_smve = pd.DataFrame({
-        'Event ID': '',
+        'Event ID': event_id,
         'Data ID': final_exposure['Data ID'],
         'Sponsor': final_exposure['Sponsor'],
         'Asset': 'All Assets',
@@ -263,6 +263,7 @@ st.write(
     "in that sheet in Cell A1 in the new sheet then upload"
 )
 
+event_id = st.number_input(label = "Input Event ID:", value=0, max_value=2000000,format="%.0f")
 uploaded_files = st.file_uploader('Upload File Below:', type=['.xlsx', 'xlsm'], accept_multiple_files=True)
 required_sheets = ('Mentions', 'Total Exposure', 'Extrapolation1')
 required_columns = {
@@ -347,7 +348,7 @@ for i, uploaded_file in enumerate(uploaded_files):
     # Surface expected data problems to the user and retain tracebacks for unexpected failures.
     try:
         final_mentions, final_exposure, new_smve, new_smv, output, warnings, extrapolation = build_extrapolated_upload(
-            data['Mentions'], data['Exposure'], data['Extrapolation1']
+            data['Mentions'], data['Exposure'], data['Extrapolation1'], event_id
         )
     except ValueError as error:
         st.error(f"Could not process '{uploaded_file.name}': {error}.")
