@@ -13,6 +13,13 @@ def build_video_upload(mentions, exposure, event_id):
     mentions = mentions.copy()
     exposure = exposure.copy()
 
+    # Normalise country names
+
+    clean_country = {
+        'Czechia': 'Czech Republic',
+        'Caribbean': 'Pan Caribbean',
+        'USA': 'United States'
+    }
     # Normalize source names and fill missing author names before filtering rows.
     clean_platform = {
         'instagram.com': 'Instagram',
@@ -23,6 +30,7 @@ def build_video_upload(mentions, exposure, event_id):
         'threads.com': 'Threads',
         'youtube.com': 'Youtube'
     }
+    mentions['Country'] = mentions['Country'].astype('string').str.strip().replace(clean_country)
     mentions['Source'] = mentions['Source'].astype('string').str.strip().replace(clean_platform)
     if 'Author' not in mentions.columns:
         mentions['Author'] = pd.NA

@@ -16,6 +16,13 @@ PLATFORM_ALIASES = {
     'threads.com': 'Threads',
     'youtube.com': 'Youtube'
 }
+clean_country = {
+            'Czechia': 'Czech Republic',
+            'Caribbean': 'Pan Caribbean',
+            'USA': 'United States'
+        }
+
+    
 PLATFORM_CPT = {
     'Facebook': 7.80,
     'Instagram': 5.88,
@@ -47,6 +54,7 @@ def build_extrapolated_upload(mentions, exposure, extrapolation, event_id):
     extrapolation = extrapolation.copy()
 
     # Normalize source names and fill missing author names before filtering.
+    mentions['Country'] = mentions['Country'].astype('string').str.strip().replace(clean_country)
     mentions['Source'] = mentions['Source'].astype('string').str.strip().replace(PLATFORM_ALIASES)
     if 'Author' not in mentions.columns:
         mentions['Author'] = pd.NA

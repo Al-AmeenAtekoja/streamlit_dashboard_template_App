@@ -101,7 +101,14 @@ for i, uploaded_file in enumerate(uploaded_files):
             + '.'
         )
         continue
-
+    
+    clean_country = {
+                'Czechia': 'Czech Republic',
+                'Caribbean': 'Pan Caribbean',
+                'USA': 'United States'
+            }
+    
+    muckruck['Country'] = muckruck['Country'].astype('string').str.strip().replace(clean_country)
     # Reject incomplete extrapolation rows instead of silently dropping them.
     required_extrap_values = ('Data ID', 'Articles', 'Reach')
     extrap_id_col = next((col for col in ID_COLUMNS if col in extrap.columns), None)

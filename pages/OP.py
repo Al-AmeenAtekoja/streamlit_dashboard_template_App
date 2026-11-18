@@ -94,6 +94,14 @@ for i, uploaded_file in enumerate(uploaded_files):
             if st.button('Rerun', key=f"rerun_{i}"):
                     st.rerun()
 
+    #normalise country names
+    clean_country = {
+            'Czechia': 'Czech Republic',
+            'Caribbean': 'Pan Caribbean',
+            'USA': 'United States'
+        }
+
+    muckruck['Country'] = muckruck['Country'].astype('string').str.strip().replace(clean_country)
     # Accept common alternate names used for the same source fields.
     data_id_col = next(
         (col for col in ['Final Data ID', 'New Data ID', 'Data ID'] if col in muckruck.columns),

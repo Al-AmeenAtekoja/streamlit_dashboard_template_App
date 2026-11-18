@@ -80,6 +80,14 @@ for i, uploaded_file in enumerate(uploaded_files):
     if st.button('Rerun', key=f"rerun_{i}"):
         st.rerun()
 
+    #normalise country names
+    clean_country = {
+                'Czechia': 'Czech Republic',
+                'Caribbean': 'Pan Caribbean',
+                'USA': 'United States'
+            }
+    
+    sm['Country'] = sm['Country'].astype('string').str.strip().replace(clean_country)
     # Resolve each sheet's optional ID and sponsor aliases independently.
     sm_id_col = next((col for col in id_columns if col in sm.columns), None)
     exposure_id_col = next((col for col in id_columns if col in sme.columns), None)
