@@ -260,7 +260,7 @@ st.write("This is designed to cut some time for dashboard uploads " \
 "to get the inital file into the template for uploading the file. Only Accepts Excel Files")
 st.write(
     "For extrapolated rows create a sheet called 'Extrapolation1' and put the rows "
-    "in that sheet in Cell A2 in the new sheet then upload"
+    "in that sheet in Cell A1 in the new sheet then upload"
 )
 
 uploaded_files = st.file_uploader('Upload File Below:', type='.xlsx', accept_multiple_files=True)
