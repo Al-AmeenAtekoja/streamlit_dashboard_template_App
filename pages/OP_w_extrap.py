@@ -200,7 +200,7 @@ for i, uploaded_file in enumerate(uploaded_files):
 
         # Map consolidated data into the two required upload-template sheets.
         new_muckruck = pd.DataFrame({
-            'Event ID': '',
+            'Event ID': event_id,
             'Data ID': final_mr['Data ID'],
             'Country': final_mr['Country'],
             'Publication': final_mr['Publication'],
@@ -215,7 +215,7 @@ for i, uploaded_file in enumerate(uploaded_files):
             'Multiple': final_mr['Multiple']
         })
         new_exposure = pd.DataFrame({
-            'Event ID': '',
+            'Event ID': event_id,
             'Data ID': final_exposure['Data ID'],
             'Sponsor': final_exposure['Brand'],
             'Asset': '',
