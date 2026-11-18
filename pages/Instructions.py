@@ -2,7 +2,9 @@ import streamlit as st
 
 st.markdown("# Instructions 🛑", text_alignment='center')
 
-st.write("Some Instructions on how to use the tool and how to get your file in the correct format before uploading.")
+st.write("If the upload is for one event ensure you have the Event ID so that column can be populated else just leave the field as 0 and you can change it when you download the file.")
+
+
 
 st.markdown("## Standard Files")
 st.markdown("##### Most files require two tabs one containing the media data and the exposure data")
