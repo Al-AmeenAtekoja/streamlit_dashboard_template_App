@@ -13,3 +13,10 @@ st.write(
     "4. For SMV files ensure the tabs are named 'Mentions' & 'Total Exposure.'\n")
 
 st.markdown("## Files with Extrapolated rows")
+
+st.write(
+    "1. In the file you wish to upload created a sheet called 'Extrapolation1.\n"
+    "2. The sheet containing the extrapolated rows copy and paste into newly created sheet in cell A1. \n"
+    "3. The sheet that contains all the exposure should be renamed to 'Total Exposure"
+    "4. For OP with Extrap you should have the tabs 'MuckRuck Data', 'Total Exposure', 'Extrapolation1' and for SMV with Extrap you should have 'Mentions', 'Total Exposure', 'Extrapolation1'"
+)

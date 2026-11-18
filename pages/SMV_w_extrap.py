@@ -264,7 +264,7 @@ st.write(
 )
 
 uploaded_files = st.file_uploader('Upload File Below:', type=['.xlsx', 'xlsm'], accept_multiple_files=True)
-required_sheets = ('Mentions', 'Exposure', 'Extrapolation1')
+required_sheets = ('Mentions', 'Total Exposure', 'Extrapolation1')
 required_columns = {
     'Mentions': (
         'Source', 'Nickname', 'Monitored', 'Country', 'Title', 'Date', 'Duration',
