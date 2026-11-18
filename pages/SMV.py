@@ -160,7 +160,7 @@ st.sidebar.markdown("# Social Media 🎉")
 st.write("This is designed to cut some time for dashboard uploads " \
 "to get the inital file into the template for uploading the file. Only Accepts Excel Files")
 
-uploaded_files = st.file_uploader('Upload File Below:', type='.xlsx', accept_multiple_files=True)
+uploaded_files = st.file_uploader('Upload File Below:', type=['.xlsx', 'xlsm'], accept_multiple_files=True)
 required_sheets = ('Mentions', 'Total Exposure')
 required_columns = {
     'Mentions': (

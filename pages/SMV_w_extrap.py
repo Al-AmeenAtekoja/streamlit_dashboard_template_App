@@ -263,7 +263,7 @@ st.write(
     "in that sheet in Cell A1 in the new sheet then upload"
 )
 
-uploaded_files = st.file_uploader('Upload File Below:', type='.xlsx', accept_multiple_files=True)
+uploaded_files = st.file_uploader('Upload File Below:', type=['.xlsx', 'xlsm'], accept_multiple_files=True)
 required_sheets = ('Mentions', 'Exposure', 'Extrapolation1')
 required_columns = {
     'Mentions': (
