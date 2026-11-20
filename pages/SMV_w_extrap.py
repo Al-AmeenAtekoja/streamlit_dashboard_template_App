@@ -279,7 +279,7 @@ required_columns = {
         'Source', 'Nickname', 'Monitored', 'Country', 'Title', 'Date', 'Duration',
         'Views', 'Engagement', 'URL'
     ),
-    'Exposure': ('Duration', 'Exposure', 'Visibility'),
+    'Total Exposure': ('Duration', 'Exposure', 'Visibility'),
     'Extrapolation1': (
         'Row Labels', 'Average of Duration', 'Average of Views', 'Average of Engagement',
         'Extrapolate Size', 'Average of Visibility'
