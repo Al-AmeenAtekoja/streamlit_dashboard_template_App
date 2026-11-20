@@ -335,7 +335,7 @@ for i, uploaded_file in enumerate(uploaded_files):
         continue
 
     missing_ids = [
-        sheet for sheet in ('Exposure', 'Extrapolation1')
+        sheet for sheet in ('Total Exposure', 'Extrapolation1')
         if not any(column in data[sheet].columns for column in ID_COLUMNS)
     ]
     if missing_ids:
@@ -347,7 +347,7 @@ for i, uploaded_file in enumerate(uploaded_files):
         continue
 
     st.success(
-        f"Loaded {len(data['Mentions'])} mentions, {len(data['Exposure'])} exposure rows, "
+        f"Loaded {len(data['Mentions'])} mentions, {len(data['Total Exposure'])} exposure rows, "
         f"and {len(data['Extrapolation1'])} extrapolated rows."
     )
     if st.button('Rerun', key=f"rerun_{i}"):
@@ -356,7 +356,7 @@ for i, uploaded_file in enumerate(uploaded_files):
     # Surface expected data problems to the user and retain tracebacks for unexpected failures.
     try:
         final_mentions, final_exposure, new_smve, new_smv, output, warnings, extrapolation = build_extrapolated_upload(
-            data['Mentions'], data['Exposure'], data['Extrapolation1'], event_id
+            data['Mentions'], data['Total Exposure'], data['Extrapolation1'], event_id
         )
     except ValueError as error:
         st.error(f"Could not process '{uploaded_file.name}': {error}.")
